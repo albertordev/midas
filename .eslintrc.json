@@ -1,0 +1,36 @@
+{
+  "extends": [
+    "next/core-web-vitals", 
+    "next/typescript",
+    "plugin:react/recommended",
+    "standard",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended",
+    "plugin:@next/next/recommended"
+  ],
+  "plugins": ["prettier"],
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "sourceType": "module"
+  },
+  "rules": {
+    "prettier/prettier": ["error", { "endOfLine": "auto" }],
+    "react/react-in-jsx-scope": "off",
+    "no-dupe-args": "error",
+    "no-self-assign": "error",
+    "no-unused-vars": "error",
+    "camelcase": "error",
+    "arrow-body-style": ["error", "always"],
+    "no-console": "error",
+    "no-empty": "error",
+    "no-eq-null": "error",
+    "prefer-const": "error"
+  }
+}
