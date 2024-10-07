@@ -1,6 +1,10 @@
 {
-  "Homepage": {
-    "title": "Welcome to the homepage",
-    "content": "This is the homepage content"
+  "Menu": {
+    "dashboard": "Dashboard",
+    "accounts": "Accounts",
+    "balance": "Balance",
+    "newMovements": "New Movements",
+    "history": "History",
+    "budget": "Budget"
   }
 }

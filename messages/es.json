@@ -1,6 +1,10 @@
 {
-  "Homepage": {
-    "title": "Bienvenidos a la página principal",
-    "content": "Este es el contenido de la página principal"
+  "Menu": {
+    "dashboard": "Cuadro de mandos",
+    "accounts": "Cuentas",
+    "balance": "Saldos",
+    "newMovements": "Alta Movimientos",
+    "history": "Histórico",
+    "budget": "Presupuesto"
   }
 }
