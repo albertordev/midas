@@ -6,5 +6,9 @@
     "newMovements": "New Movements",
     "history": "History",
     "budget": "Budget"
+  },
+  "Dashboard": {
+    "welcome": "Welcome",
+    "subheader": "Check your personal finances effortlesly with Midas"
   }
 }

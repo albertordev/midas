@@ -6,5 +6,9 @@
     "newMovements": "Alta Movimientos",
     "history": "Histórico",
     "budget": "Presupuesto"
+  },
+  "Dashboard": {
+    "welcome": "Bienvenido/a",
+    "subheader": "Ten al día tus finanzas personales sin esfuerzo con Midas"
   }
 }

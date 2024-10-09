@@ -1,4 +1,4 @@
-import Sidebar from "../components/Sidebar"
+import Menubar from '@/components/Menubar'
 
 export default function RootLayout({
   children,
@@ -6,8 +6,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <main className="flex flex-col h-full">
-      <Sidebar />
+    <main className="flex h-full">
+      <Menubar />
       {children}
     </main>
   )
