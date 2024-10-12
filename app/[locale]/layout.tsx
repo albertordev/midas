@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 import { Plus_Jakarta_Sans } from 'next/font/google'
-import { cn } from '../lib/utils'
+import { cn } from '@/lib/utils'
 
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'

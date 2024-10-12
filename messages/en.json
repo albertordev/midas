@@ -9,6 +9,17 @@
   },
   "Dashboard": {
     "welcome": "Welcome",
-    "subheader": "Check your personal finances effortlesly with Midas"
+    "subheader": "Check your personal finances effortlesly with Midas",
+    "income": "Income",
+    "expenses": "Expenses",
+    "balance": "Balance",
+    "topIncomeHeader": "Top Income",
+    "topExpensesHeader": "Top Expenses",
+    "lineChartBalance": "Balance",
+    "lineChartBudget": "Budget"
+  },
+  "Accounts": {
+    "header": "Accounts list",
+    "addAccount": "Add account"
   }
 }

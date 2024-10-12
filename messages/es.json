@@ -9,6 +9,17 @@
   },
   "Dashboard": {
     "welcome": "Bienvenido/a",
-    "subheader": "Ten al día tus finanzas personales sin esfuerzo con Midas"
+    "subheader": "Ten al día tus finanzas personales sin esfuerzo con Midas",
+    "income": "Ingresos",
+    "expenses": "Gastos",
+    "balance": "Saldo",
+    "topIncomeHeader": "Mayores ingresos",
+    "topExpensesHeader": "Mayores gastos",
+    "lineChartBalance": "Saldo",
+    "lineChartBudget": "Presupuesto"
+  },
+  "Accounts": {
+    "header": "Lista de cuentas",
+    "addAccount": "Añadir cuenta"
   }
 }

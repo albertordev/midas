@@ -49,11 +49,11 @@ const Menubar = () => {
   ]
 
   return (
-    <aside className="flex h-full w-24 flex-col justify-between border-r-2 border-gray-200 bg-gray-200/25 pt-2 md:w-80">
+    <aside className="flex h-full w-[5.5rem] flex-col justify-start border-r-2 border-gray-200 bg-gray-200/25 pt-2 md:justify-between lg:w-72">
       <nav className="mt-2 flex flex-col p-4">
         <header className="flex items-center justify-start gap-2 p-2">
           <Image src="/icons/logo.svg" alt="Logo" width={50} height={50} />
-          <h1 className="hidden text-3xl font-bold md:block">Midas</h1>
+          <h1 className="hidden text-3xl font-bold lg:block">Midas</h1>
         </header>
         <ul className="flex flex-col gap-4 p-2">
           {menubarItems.map(item => {
@@ -77,7 +77,7 @@ const Menubar = () => {
         </ul>
       </nav>
       <footer className="flex items-center justify-center p-4 md:justify-between">
-        <div className="hidden flex-col text-start text-xs text-gray-500 md:flex">
+        <div className="hidden flex-col text-start text-xs text-gray-500 lg:flex">
           <span className="text-[16px] font-semibold">Alberto Rodríguez</span>
           arodriguez@gmail.com
         </div>
