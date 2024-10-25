@@ -1,4 +1,18 @@
 {
+  "Login": {
+    "title": "Bienvenido/a a Midas",
+    "subtitle": "Inicia sesión en el sistema",
+    "usernamePlaceholder": "Introduce tu usuario",
+    "passwordPlaceholder": "Introduce tu contraseña",
+    "usernameMinLength": "El código de usuario debe contener al menos 3 caracteres",
+    "usernameMaxLength": "El código de usuario debe contener como máximo 10 caracteres",
+    "passwordMinLength": "La contraseña debe contener al menos 6 caracteres",
+    "passwordMaxLength": "La contraseña debe contener como máximo 20 caracteres",
+    "loginButton": "Iniciar sesión",
+    "invalidCredentials": "Usuario o contraseña incorrectos",
+    "invalidData": "Se han introducido datos incorrectos",
+    "generalError": "Ha ocurrido un error al iniciar sesión"
+  },
   "Menu": {
     "dashboard": "Cuadro de mandos",
     "accounts": "Cuentas",
@@ -20,6 +34,38 @@
   },
   "Accounts": {
     "header": "Lista de cuentas",
-    "addAccount": "Añadir cuenta"
+    "addAccount": "Añadir cuenta",
+    "account": "Cuenta",
+    "accountPlaceholder": "Introduzca el código de la cuenta",
+    "description": "Descripción",
+    "descriptionPlaceholder": "Introduzca la descripción",
+    "icon": "Icono",
+    "iconPlaceholder": "Seleccione el icono",
+    "type": "Tipo",
+    "typePlaceholder": "Seleccione el tipo",
+    "comments": "Observaciones",
+    "commentsPlaceholder": "Introduzca las observaciones",
+    "titleNew": "Nueva cuenta",
+    "titleModify": "Modificación de la cuenta",
+    "subtitle": "Introduzca los datos de la cuenta",
+    "incomeType": "Ingresos",
+    "expensesType": "Gastos",
+    "accountMinLength": "El código de cuenta debe tener al menos 5 caracteres",
+    "accountMaxLength": "El código de cuenta no puede sobrepasar los 20 caracteres",
+    "descriptionMinLength": "Introduzca una descripción corta para la cuenta",
+    "descriptionMaxLength": "La descripción no puede contener más 100 caracteres",
+    "typeMinLength": "Seleccione un tipo de cuenta",
+    "commentsMaxLength": "Las observaciones no pueden contener más de 1000 caracteres"
+  },
+  "Global": {
+    "actions": "Acciones",
+    "edit": "Modificar",
+    "delete": "Borrar",
+    "nextPage": "Siguiente",
+    "previousPage": "Anterior",
+    "search": "Buscar",
+    "columns": "Columnas",
+    "noResults": "Sin resultados",
+    "save": "Guardar"
   }
 }

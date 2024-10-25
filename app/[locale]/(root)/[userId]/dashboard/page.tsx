@@ -1,13 +1,23 @@
+'use client'
+
 import { useTranslations } from 'next-intl'
 
 import DashboardCard from '@/components/DashboardCard'
 import TopMovements from '@/components/TopMovements'
 import { DashboardLineChart } from '@/components/DashboardLineChart'
+import { useUserStore } from '@/store/auth-store'
+import { redirect, useParams } from 'next/navigation'
 
 const DashboardPage = () => {
   const t = useTranslations('Dashboard')
+  const state = useUserStore((state: any) => state)
+  const params = useParams()
+  const { locale } = params
+  const { user } = state
 
-  const labels = ['Account 1', 'Account 2']
+  if (!state || !user || !user.$id) {
+    redirect(`/${locale}/`)
+  }
 
   const incomeData = [
     { name: 'Account 1', value: 300 },
@@ -25,9 +35,6 @@ const DashboardPage = () => {
   ]
 
   const backgrounds = ['#3B82F6', '#0d53a6']
-
-  const balanceDataKey = t('lineChartBalance')
-  const budgetDataKey = t('lineChartBudget')
 
   const incomeAccounts = [
     {
@@ -62,8 +69,8 @@ const DashboardPage = () => {
   return (
     <div className="flex h-full w-full flex-col">
       <header className="mt-2 p-4">
-        <h1 className="text-3xl font-bold">
-          {t('welcome')}, <span className="text-blue-500">Alberto</span>
+        <h1 className="text-3xl font-bold text-gray-600">
+          {t('welcome')}, <span className="text-blue-500">{user?.name}</span>
         </h1>
         <p className="italic text-gray-500">{t('subheader')}</p>
       </header>

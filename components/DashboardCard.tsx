@@ -9,6 +9,7 @@ import { PieChart, Pie, Sector, Cell } from 'recharts'
 
 import CountUp from 'react-countup'
 import { useEffect, useState } from 'react'
+import { DashboardCardProps } from '@/types'
 
 const DashboardCard = ({
   title,
@@ -83,7 +84,7 @@ const DashboardCard = ({
             fill="#8884d8"
             paddingAngle={5}
             dataKey="value">
-            {data.map((entry, index) => (
+            {data.map((entry: any, index: number) => (
               <Cell
                 key={`cell-${index}`}
                 fill={backgrounds[index % backgrounds.length]}

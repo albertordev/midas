@@ -91,3 +91,5 @@ export function formatAmount(amount: number, locale: string): string {
 
   return formatter.format(amount)
 }
+
+export const parseStringify = (value: any) => JSON.parse(JSON.stringify(value))

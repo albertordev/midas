@@ -6,6 +6,8 @@ import { cn } from '@/lib/utils'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
 
+import { Toaster } from '@/components/ui/toaster'
+
 import './globals.css'
 
 const fontSans = Plus_Jakarta_Sans({
@@ -33,6 +35,7 @@ export default async function RootLayout({
             'bg-dark-300 min-h-screen font-sans antialiased',
             fontSans.variable
           )}>
+          <Toaster />
           {children}
         </body>
       </html>

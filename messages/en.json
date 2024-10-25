@@ -1,4 +1,18 @@
 {
+  "Login": {
+    "title": "Welcome to Midas",
+    "subtitle": "Fill the following form to login",
+    "usernamePlaceholder": "Enter your username",
+    "passwordPlaceholder": "Enter your password",
+    "usernameMinLength": "The username must be at least 3 characters",
+    "usernameMaxLength": "The username must be at most 10 characters",
+    "passwordMinLength": "The password must be at least 8 characters",
+    "passwordMaxLength": "The password must be at most 20 characters",
+    "loginButton": "Login",
+    "invalidCredentials": "Invalid credentials",
+    "invalidData": "Invalid login data entered",
+    "generalError": "An error has occurred while logging in"
+  },
   "Menu": {
     "dashboard": "Dashboard",
     "accounts": "Accounts",
@@ -20,6 +34,38 @@
   },
   "Accounts": {
     "header": "Accounts list",
-    "addAccount": "Add account"
+    "addAccount": "Add account",
+    "account": "Account",
+    "accountPlaceholder": "Enter the account code",
+    "description": "Description",
+    "descriptionPlaceholder": "Enter the description",
+    "icon": "Icon",
+    "iconPlaceholder": "Select the icon",
+    "type": "Type",
+    "typePlaceholder": "Select the type",
+    "comments": "Comments",
+    "commentsPlaceholder": "Enter the comments",
+    "titleNew": "New account",
+    "titleModify": "Modify account",
+    "subtitle": "Please fulfill the accounts details",
+    "incomeType": "Income",
+    "expensesType": "Expenses",
+    "accountMinLength": "The account code must be at least 5 characters",
+    "accountMaxLength": "The account code must be at most 20 characters",
+    "descriptionMinLength": "You have to write a short description for the account",
+    "descriptionMaxLength": "The description must be at most 100 characters",
+    "typeMinLength": "You have to select a type for the account",
+    "commentsMaxLength": "The optional comments must be at most 1000 characters"
+  },
+  "Global": {
+    "actions": "Actions",
+    "edit": "Edit",
+    "delete": "Delete",
+    "nextPage": "Next",
+    "previousPage": "Previous",
+    "search": "Search",
+    "columns": "Columns",
+    "noResults": "No results",
+    "save": "Save"
   }
 }
