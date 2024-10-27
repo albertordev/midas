@@ -1,22 +1,17 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
-
 import DashboardCard from '@/components/DashboardCard'
 import TopMovements from '@/components/TopMovements'
 import { DashboardLineChart } from '@/components/DashboardLineChart'
 import { useUserStore } from '@/store/auth-store'
-import { redirect, useParams } from 'next/navigation'
+import { redirect } from 'next/navigation'
 
 const DashboardPage = () => {
-  const t = useTranslations('Dashboard')
   const state = useUserStore((state: any) => state)
-  const params = useParams()
-  const { locale } = params
   const { user } = state
 
   if (!state || !user || !user.$id) {
-    redirect(`/${locale}/`)
+    redirect(`/`)
   }
 
   const incomeData = [
@@ -70,15 +65,17 @@ const DashboardPage = () => {
     <div className="flex h-full w-full flex-col">
       <header className="mt-2 p-4">
         <h1 className="text-3xl font-bold text-gray-600">
-          {t('welcome')}, <span className="text-blue-500">{user?.name}</span>
+          Bienvenido/a, <span className="text-blue-500">{user?.name}</span>
         </h1>
-        <p className="italic text-gray-500">{t('subheader')}</p>
+        <p className="italic text-gray-500">
+          Ten al día tus finanzas personales sin esfuerzo con Midas
+        </p>
       </header>
       <main className="h-auto w-full bg-gray-300/70">
         <div className="flex flex-col flex-wrap sm:flex-row 2xl:flex-nowrap">
           <div className="grid w-full grid-cols-1 items-center justify-start gap-4 p-4 sm:w-auto sm:grid-cols-3">
             <DashboardCard
-              title={t('income')}
+              title="Ingresos"
               amount={1400}
               icon="/icons/income.svg"
               color="green-700"
@@ -86,7 +83,7 @@ const DashboardPage = () => {
               backgrounds={backgrounds}
             />
             <DashboardCard
-              title={t('expenses')}
+              title="Gastos"
               amount={800}
               icon="/icons/expenses.svg"
               color="red-700"
@@ -94,7 +91,7 @@ const DashboardPage = () => {
               backgrounds={backgrounds}
             />
             <DashboardCard
-              title={t('balance')}
+              title="Saldo"
               amount={600}
               icon="/icons/balance.svg"
               color="yellow-700"
@@ -104,12 +101,12 @@ const DashboardPage = () => {
           </div>
           <div className="grid grid-cols-1 gap-2 p-4 sm:grid-cols-2">
             <TopMovements
-              header={t('topIncomeHeader')}
+              header="Principales ingresos"
               type="income"
               accounts={incomeAccounts}
             />
             <TopMovements
-              header={t('topExpensesHeader')}
+              header="Principales gastos"
               type="expenses"
               accounts={expensesAccounts}
             />

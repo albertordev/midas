@@ -29,21 +29,17 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
-  translations: any
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
-  translations,
 }: DataTableProps<TData, TValue>) {
-  const t = useTranslations('Global')
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -70,7 +66,7 @@ export function DataTable<TData, TValue>({
     <div className="w-full">
       <div className="flex items-center gap-2 py-4">
         <Input
-          placeholder={t('search')}
+          placeholder="Buscar"
           onChange={e => table.setGlobalFilter(String(e.target.value))}
           className="input w-full focus-visible:ring-0"
         />
@@ -79,7 +75,7 @@ export function DataTable<TData, TValue>({
             <Button
               variant="outline"
               className="ml-auto border-gray-300 text-gray-600 hover:text-gray-600/50 focus-visible:ring-0">
-              {t('columns')}
+              Columnas
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -98,7 +94,7 @@ export function DataTable<TData, TValue>({
                     key={column.id}
                     checked={column.getIsVisible()}
                     onCheckedChange={value => column.toggleVisibility(!!value)}>
-                    {index === 0 ? 'Id' : translations(column.id)}
+                    {column.id}
                   </DropdownMenuCheckboxItem>
                 )
               })}
@@ -128,7 +124,7 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {data && table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map(row => (
                 <TableRow
                   key={row.id}
@@ -151,7 +147,7 @@ export function DataTable<TData, TValue>({
                 <TableCell
                   colSpan={columns.length}
                   className="h-24 text-center text-gray-600">
-                  {t('noResults')}
+                  Sin resultados
                 </TableCell>
               </TableRow>
             )}
@@ -163,15 +159,15 @@ export function DataTable<TData, TValue>({
           variant="outline"
           size="sm"
           onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}>
-          {t('previousPage')}
+          disabled={!data || !table.getCanPreviousPage()}>
+          Anterior
         </Button>
         <Button
           variant="outline"
           size="sm"
           onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}>
-          {t('nextPage')}
+          disabled={!data || !table.getCanNextPage()}>
+          Siguiente
         </Button>
       </div>
     </div>

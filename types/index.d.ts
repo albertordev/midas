@@ -23,22 +23,16 @@ declare type TopMovementsProps = {
   accounts: MovementAccount[]
 }
 
-export type Account = {
-  id: string
-  account: string
-  description: string
-  icon: string
-  type: string
-}
-
 export type AccountsModalProps = {
   type: 'create' | 'modify'
+  userId: string
   open: boolean
   setOpen?: Dispatch<SetStateAction<boolean>>
 }
 
 export type AccountsFormProps = {
   type: 'create' | 'modify'
+  userId: string
 }
 
 export type AuthResponse = {
@@ -49,4 +43,13 @@ export type AuthResponse = {
 export type User = {
   id: string
   name: string
+}
+
+export type Account = {
+  userId: string
+  code: string
+  description: string
+  icon?: string
+  type: string
+  comments?: string
 }

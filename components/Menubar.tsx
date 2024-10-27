@@ -4,60 +4,52 @@ import { redirect, useParams, usePathname } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { useTranslations } from 'next-intl'
-
 import { cn } from '@/lib/utils'
 import { LogOutIcon } from 'lucide-react'
 import { useUserStore } from '@/store/auth-store'
 import { useRouter } from 'next/navigation'
-import { User } from '@/types'
 
 const Menubar = () => {
-  /** Traducciones */
-  const t = useTranslations('Menu')
   const pathname = usePathname()
-  // const locale = pathname.split('/')[1]
-  const params = useParams()
-  const { locale } = params
   const saveUser = useUserStore((state: any) => state.saveUser)
   const router = useRouter()
   const user = useUserStore((state: any) => state.user)
   let path: string = ''
 
   if (!user || !user.$id) {
-    redirect(`/${locale}/`)
+    redirect(`/`)
   }
 
-  path = `${locale}/${user.$id}`
+  path = `${user.$id}`
 
   const menubarItems = [
     {
-      label: t('dashboard'),
+      label: 'Cuadro de mandos',
       icon: '/icons/dashboard.svg',
       route: `/${path}/dashboard`,
     },
     {
-      label: t('accounts'),
+      label: 'Cuentas',
       icon: '/icons/credit-card.svg',
       route: `/${path}/accounts`,
     },
     {
-      label: t('balance'),
+      label: 'Saldos',
       icon: '/icons/euro.svg',
       route: `/${path}/balance`,
     },
     {
-      label: t('newMovements'),
+      label: 'Alta Movimientos',
       icon: '/icons/layer-plus.svg',
       route: `/${path}/new-movements`,
     },
     {
-      label: t('history'),
+      label: 'Histórico',
       icon: '/icons/transfer.svg',
       route: `/${path}/history`,
     },
     {
-      label: t('budget'),
+      label: 'Presupuesto',
       icon: '/icons/trending-up.svg',
       route: `/${path}/budget`,
     },
@@ -66,7 +58,7 @@ const Menubar = () => {
   const LogOut = () => {
     saveUser({ user: null })
     localStorage.removeItem('midas-user')
-    router.push(`/${locale}/`)
+    router.push(`/`)
   }
 
   return (
@@ -101,8 +93,8 @@ const Menubar = () => {
       </nav>
       <footer className="flex items-center justify-center p-4 md:justify-between">
         <div className="hidden flex-col text-start text-xs text-gray-500 lg:flex">
-          <span className="text-[16px] font-semibold">Alberto Rodríguez</span>
-          arodriguez@gmail.com
+          <div>Avatar</div>
+          <span className="text-[16px] font-semibold">{user && user.name}</span>
         </div>
         <LogOutIcon className="cursor-pointer text-gray-500" onClick={LogOut} />
       </footer>

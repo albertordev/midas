@@ -55,7 +55,8 @@
     "descriptionMinLength": "You have to write a short description for the account",
     "descriptionMaxLength": "The description must be at most 100 characters",
     "typeMinLength": "You have to select a type for the account",
-    "commentsMaxLength": "The optional comments must be at most 1000 characters"
+    "commentsMaxLength": "The optional comments must be at most 1000 characters",
+    "generalListError": "An error has occurred while retrieving the accounts list"
   },
   "Global": {
     "actions": "Actions",

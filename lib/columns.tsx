@@ -1,4 +1,3 @@
-import { Account } from '@/types'
 import { ColumnDef } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
 import {
@@ -10,12 +9,13 @@ import {
 import { MoreHorizontal, ArrowUpDown, Edit, Trash } from 'lucide-react'
 import { AccountColumns } from '@/constants'
 import Image from 'next/image'
+import { AccountModel } from '@/types/appwrite.types'
 
 export const accountColumns: ({
   labels,
 }: {
   labels: string[]
-}) => ColumnDef<Account>[] = ({ labels }: { labels: string[] }) => {
+}) => ColumnDef<AccountModel>[] = ({ labels }: { labels: string[] }) => {
   return [
     {
       accessorKey: 'id',

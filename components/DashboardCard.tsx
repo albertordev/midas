@@ -1,6 +1,5 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
 import Image from 'next/image'
 
 import { Chart, ArcElement, Tooltip } from 'chart.js'
@@ -22,31 +21,11 @@ const DashboardCard = ({
   /** Para asegurar que se renderice el mismo componente en el cliente y en el servidor */
   const [isClient, setIsClient] = useState(false)
 
-  const pathname = usePathname()
-  const locale = pathname.split('/')[1]
-  let suffix: string
-  let separator: string
-  let decimal: string
+  let suffix = '€'
+  let separator = '.'
+  let decimal = ','
 
   Chart.register(ArcElement, Tooltip)
-
-  switch (locale) {
-    case 'en':
-      suffix = '$'
-      separator = ','
-      decimal = '.'
-      break
-    case 'es':
-      suffix = '€'
-      separator = '.'
-      decimal = ','
-      break
-    default:
-      suffix = '€'
-      separator = '.'
-      decimal = ','
-      break
-  }
 
   useEffect(() => {
     setIsClient(true)

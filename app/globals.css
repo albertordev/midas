@@ -84,6 +84,6 @@ body,
   }
 
   .input {
-    @apply border-gray-300 bg-transparent text-gray-500 focus:border-gray-500 focus-visible:ring-0;
+    @apply border-gray-300 bg-transparent text-gray-600 focus:border-gray-500 focus-visible:ring-0;
   }
 }

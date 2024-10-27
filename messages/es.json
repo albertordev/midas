@@ -27,8 +27,8 @@
     "income": "Ingresos",
     "expenses": "Gastos",
     "balance": "Saldo",
-    "topIncomeHeader": "Mayores ingresos",
-    "topExpensesHeader": "Mayores gastos",
+    "topIncomeHeader": "Principales ingresos",
+    "topExpensesHeader": "Principales gastos",
     "lineChartBalance": "Saldo",
     "lineChartBudget": "Presupuesto"
   },
@@ -55,7 +55,8 @@
     "descriptionMinLength": "Introduzca una descripción corta para la cuenta",
     "descriptionMaxLength": "La descripción no puede contener más 100 caracteres",
     "typeMinLength": "Seleccione un tipo de cuenta",
-    "commentsMaxLength": "Las observaciones no pueden contener más de 1000 caracteres"
+    "commentsMaxLength": "Las observaciones no pueden contener más de 1000 caracteres",
+    "generalListError": "Ha ocurrido un error al recuperar la lista de cuentas"
   },
   "Global": {
     "actions": "Acciones",

@@ -3,9 +3,6 @@ import type { Metadata } from 'next'
 import { Plus_Jakarta_Sans } from 'next/font/google'
 import { cn } from '@/lib/utils'
 
-import { NextIntlClientProvider } from 'next-intl'
-import { getMessages } from 'next-intl/server'
-
 import { Toaster } from '@/components/ui/toaster'
 
 import './globals.css'
@@ -26,19 +23,16 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const messages = await getMessages()
   return (
-    <NextIntlClientProvider messages={messages}>
-      <html lang="es" suppressHydrationWarning>
-        <body
-          className={cn(
-            'bg-dark-300 min-h-screen font-sans antialiased',
-            fontSans.variable
-          )}>
-          <Toaster />
-          {children}
-        </body>
-      </html>
-    </NextIntlClientProvider>
+    <html lang="es" suppressHydrationWarning>
+      <body
+        className={cn(
+          'bg-dark-300 min-h-screen font-sans antialiased',
+          fontSans.variable
+        )}>
+        <Toaster />
+        {children}
+      </body>
+    </html>
   )
 }

@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button'
 import CustomFormField from '@/components/CustomFormField'
 import { FormFieldType } from '@/constants'
 import { Form } from '@/components/ui/form'
-import { useTranslations } from 'next-intl'
 import { loginUser } from '@/lib/actions/user.actions'
 import { useParams, useRouter } from 'next/navigation'
 import { AuthResponse } from '@/types'
@@ -17,7 +16,6 @@ import Image from 'next/image'
 import { useUserStore } from '@/store/auth-store'
 
 const LoginForm = () => {
-  const t = useTranslations('Login')
   const router = useRouter()
   const params = useParams()
   const { locale } = params
@@ -29,12 +27,12 @@ const LoginForm = () => {
   const formSchema = z.object({
     username: z
       .string()
-      .min(3, t('usernameMinLength'))
-      .max(10, t('usernameMaxLength')),
+      .min(3, 'El código de usuario debe contener al menos 3 caracteres')
+      .max(10, 'El código de usuario debe contener como máximo 10 caracteres'),
     password: z
       .string()
-      .min(8, t('passwordMinLength'))
-      .max(20, t('passwordMaxLength')),
+      .min(8, 'La contraseña debe contener al menos 6 caracteres')
+      .max(20, 'La contraseña debe contener como máximo 20 caracteres'),
   })
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -73,23 +71,38 @@ const LoginForm = () => {
 
   const parseError = (errorCode: number | undefined): void => {
     if (!errorCode) {
-      toast({ variant: 'destructive', description: t('generalError') })
+      toast({
+        variant: 'destructive',
+        description: 'Ha ocurrido un error al iniciar sesión',
+      })
 
       return
     }
 
     switch (errorCode) {
       case 400:
-        toast({ variant: 'destructive', description: t('invalidData') })
+        toast({
+          variant: 'destructive',
+          description: 'Se han introducido datos incorrectos',
+        })
         break
       case 401:
-        toast({ variant: 'destructive', description: t('invalidCredentials') })
+        toast({
+          variant: 'destructive',
+          description: 'Usuario o contraseña incorrectos',
+        })
         break
       case 500:
-        toast({ variant: 'destructive', description: t('generalError') })
+        toast({
+          variant: 'destructive',
+          description: 'Ha ocurrido un error al iniciar sesión',
+        })
         break
       default:
-        toast({ variant: 'destructive', description: t('generalError') })
+        toast({
+          variant: 'destructive',
+          description: 'Ha ocurrido un error al iniciar sesión',
+        })
         break
     }
   }
@@ -105,7 +118,7 @@ const LoginForm = () => {
               fieldType={FormFieldType.INPUT}
               control={form.control}
               name="username"
-              placeholder={t('usernamePlaceholder')}
+              placeholder="Introduce tu usuario"
               iconSrc="/icons/user.svg"
             />
           </div>
@@ -115,7 +128,7 @@ const LoginForm = () => {
               control={form.control}
               name="password"
               type="password"
-              placeholder={t('passwordPlaceholder')}
+              placeholder="Introduce tu contraseña"
               iconSrc="/icons/password.svg"
             />
           </div>
@@ -132,7 +145,7 @@ const LoginForm = () => {
               alt="Loading..."
             />
           )}
-          {t('loginButton')}
+          Iniciar sesión
         </Button>
       </form>
     </Form>

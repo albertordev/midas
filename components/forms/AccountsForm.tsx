@@ -2,29 +2,30 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Button } from '../ui/button'
-import CustomFormField from '../CustomFormField'
+import CustomFormField from '@/components/CustomFormField'
 import { FormFieldType } from '@/constants'
 import { Form } from '../ui/form'
-import { useTranslations } from 'next-intl'
-import { SelectItem } from '../ui/select'
+import { SelectItem } from '@/components/ui/select'
+import { createAccount } from '@/lib/actions/accounts.actions'
+import { Account, AccountsFormProps } from '@/types/'
 
-const AccountsForm = ({ type }: { type: 'create' | 'modify' }) => {
-  const t = useTranslations('Accounts')
-  const tt = useTranslations('Global')
-
+const AccountsForm = ({ type, userId }: AccountsFormProps) => {
   const formSchema = z.object({
     id: z.number().optional(),
     account: z
       .string()
-      .min(5, t('accountMinLength'))
-      .max(20, t('accountMaxLength')),
+      .min(5, 'El código de cuenta debe tener al menos 5 caracteres')
+      .max(20, 'El código de cuenta no puede sobrepasar los 20 caracteres'),
     description: z
       .string()
-      .min(1, t('descriptionMinLength'))
-      .max(100, t('descriptionMaxLength')),
+      .min(1, 'Introduzca una descripción corta para la cuenta')
+      .max(100, 'La descripción no puede contener más 100 caracteres'),
     icon: z.string().optional(),
-    type: z.string().min(1, t('typeMinLength')),
-    comments: z.string().max(1000, t('commentsMaxLength')).optional(),
+    type: z.string().min(1, 'Seleccione un tipo de cuenta'),
+    comments: z
+      .string()
+      .max(1000, 'Las observaciones no pueden contener más de 1000 caracteres')
+      .optional(),
   })
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -39,10 +40,10 @@ const AccountsForm = ({ type }: { type: 'create' | 'modify' }) => {
     },
   })
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    const account = {
-      userId: 'alberto',
-      account: values.account,
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    const account: Account = {
+      userId: userId,
+      code: values.account,
       description: values.description,
       icon: values.icon,
       type: values.type,
@@ -50,6 +51,12 @@ const AccountsForm = ({ type }: { type: 'create' | 'modify' }) => {
     }
 
     console.log(account)
+
+    try {
+      await createAccount(account)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
@@ -62,35 +69,35 @@ const AccountsForm = ({ type }: { type: 'create' | 'modify' }) => {
             fieldType={FormFieldType.INPUT}
             control={form.control}
             name="account"
-            label={t('account')}
-            placeholder={t('accountPlaceholder')}
+            label="Cuenta"
+            placeholder="Introduzca el código de la cuenta"
           />
           <CustomFormField
             fieldType={FormFieldType.INPUT}
             control={form.control}
             name="description"
-            label={t('description')}
-            placeholder={t('descriptionPlaceholder')}
+            label="Descripción"
+            placeholder="Introduzca la descripción"
           />
           <CustomFormField
             fieldType={FormFieldType.SELECT}
             control={form.control}
             name="type"
-            label={t('type')}
-            placeholder={t('typePlaceholder')}>
-            <SelectItem value="Income">{t('incomeType')}</SelectItem>
-            <SelectItem value="Expenses">{t('expensesType')}</SelectItem>
+            label="Tipo"
+            placeholder="Seleccione el tipo">
+            <SelectItem value="income">Ingresos</SelectItem>
+            <SelectItem value="expenses">Gastos</SelectItem>
           </CustomFormField>
           <CustomFormField
             fieldType={FormFieldType.TEXTAREA}
             control={form.control}
             name="comments"
-            label={t('comments')}
-            placeholder={t('commentsPlaceholder')}
+            label="Observaciones"
+            placeholder="Introduzca las observaciones (máximo 1000 caracteres)"
           />
         </div>
         <Button className="mt-4 bg-blue-500 hover:bg-blue-500/70" type="submit">
-          {tt('save')}
+          Guardar
         </Button>
       </form>
     </Form>
