@@ -15,6 +15,44 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { useUserStore } from '@/store/auth-store'
 
+const parseError = (errorCode: number | undefined): void => {
+  if (!errorCode) {
+    toast({
+      variant: 'destructive',
+      description: 'Ha ocurrido un error al iniciar sesión',
+    })
+
+    return
+  }
+
+  switch (errorCode) {
+    case 400:
+      toast({
+        variant: 'destructive',
+        description: 'Se han introducido datos incorrectos',
+      })
+      break
+    case 401:
+      toast({
+        variant: 'destructive',
+        description: 'Usuario o contraseña incorrectos',
+      })
+      break
+    case 500:
+      toast({
+        variant: 'destructive',
+        description: 'Ha ocurrido un error al iniciar sesión',
+      })
+      break
+    default:
+      toast({
+        variant: 'destructive',
+        description: 'Ha ocurrido un error al iniciar sesión',
+      })
+      break
+  }
+}
+
 const LoginForm = () => {
   const router = useRouter()
   const params = useParams()
@@ -66,44 +104,6 @@ const LoginForm = () => {
       error && parseError(error.status)
     } finally {
       setIsLoading(false)
-    }
-  }
-
-  const parseError = (errorCode: number | undefined): void => {
-    if (!errorCode) {
-      toast({
-        variant: 'destructive',
-        description: 'Ha ocurrido un error al iniciar sesión',
-      })
-
-      return
-    }
-
-    switch (errorCode) {
-      case 400:
-        toast({
-          variant: 'destructive',
-          description: 'Se han introducido datos incorrectos',
-        })
-        break
-      case 401:
-        toast({
-          variant: 'destructive',
-          description: 'Usuario o contraseña incorrectos',
-        })
-        break
-      case 500:
-        toast({
-          variant: 'destructive',
-          description: 'Ha ocurrido un error al iniciar sesión',
-        })
-        break
-      default:
-        toast({
-          variant: 'destructive',
-          description: 'Ha ocurrido un error al iniciar sesión',
-        })
-        break
     }
   }
 

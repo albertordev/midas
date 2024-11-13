@@ -23,16 +23,24 @@ declare type TopMovementsProps = {
   accounts: MovementAccount[]
 }
 
-export type AccountsModalProps = {
+// export type AccountsModalProps = {
+//   type: 'create' | 'modify'
+//   userId: string
+//   open: boolean
+//   setOpen?: Dispatch<SetStateAction<boolean>>
+// }
+
+export type EntityFormProps = {
   type: 'create' | 'modify'
   userId: string
-  open: boolean
+  open?: boolean
   setOpen?: Dispatch<SetStateAction<boolean>>
 }
 
-export type AccountsFormProps = {
-  type: 'create' | 'modify'
+export type HistoryFiltersProps = {
   userId: string
+  open?: boolean
+  setOpen?: Dispatch<SetStateAction<boolean>>
 }
 
 export type AuthResponse = {
@@ -47,9 +55,48 @@ export type User = {
 
 export type Account = {
   userId: string
+  id: string
   code: string
   description: string
   icon?: string
   type: string
   comments?: string
+}
+
+export type CellActionProps = {
+  origin: string
+  row: Row<TData>
+  labels: string[]
+  actions: string[]
+}
+
+export type Movement = {
+  id: string
+  userId: string
+  account: string
+  type: string
+  description: string
+  date: Date
+  amount: number
+}
+
+export type Balance = {
+  id: string
+  userId: string
+  account: string
+  type: string
+  period: number
+  year: number
+  amount: number
+}
+
+export type HistoryFiltersParams = {
+  userId: string
+  account?: string
+  type?: string
+  description?: string
+  dateFrom?: Date | null
+  dateTo?: Date | null
+  amountFrom?: number
+  amountTo?: number
 }

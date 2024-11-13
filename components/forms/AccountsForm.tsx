@@ -1,47 +1,65 @@
+'use client'
+
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { Button } from '../ui/button'
+import { Button } from '@/components/ui/button'
 import CustomFormField from '@/components/CustomFormField'
 import { FormFieldType } from '@/constants'
-import { Form } from '../ui/form'
+import { Form } from '@/components/ui/form'
 import { SelectItem } from '@/components/ui/select'
-import { createAccount } from '@/lib/actions/accounts.actions'
-import { Account, AccountsFormProps } from '@/types/'
+import { useState } from 'react'
+import { createAccount, modifyAccount } from '@/lib/actions/accounts.actions'
+import { Account, AuthResponse, EntityFormProps } from '@/types/'
+import { useAccountActionStore } from '@/store/account-action-store'
+import { toast } from '@/hooks/use-toast'
 
-const AccountsForm = ({ type, userId }: AccountsFormProps) => {
-  const formSchema = z.object({
-    id: z.number().optional(),
-    account: z
-      .string()
-      .min(5, 'El código de cuenta debe tener al menos 5 caracteres')
-      .max(20, 'El código de cuenta no puede sobrepasar los 20 caracteres'),
-    description: z
-      .string()
-      .min(1, 'Introduzca una descripción corta para la cuenta')
-      .max(100, 'La descripción no puede contener más 100 caracteres'),
-    icon: z.string().optional(),
-    type: z.string().min(1, 'Seleccione un tipo de cuenta'),
-    comments: z
-      .string()
-      .max(1000, 'Las observaciones no pueden contener más de 1000 caracteres')
-      .optional(),
-  })
+const formSchema = z.object({
+  account: z
+    .string()
+    .min(5, 'El código de cuenta debe tener al menos 5 caracteres')
+    .max(20, 'El código de cuenta no puede sobrepasar los 20 caracteres'),
+  description: z
+    .string()
+    .min(1, 'Introduzca una descripción corta para la cuenta')
+    .max(100, 'La descripción no puede contener más 100 caracteres'),
+  icon: z.string().optional(),
+  type: z.string().min(1, 'Seleccione un tipo de cuenta'),
+  comments: z
+    .string()
+    .max(1000, 'Las observaciones no pueden contener más de 1000 caracteres')
+    .optional(),
+})
+
+const AccountsForm = ({ type, userId, setOpen }: EntityFormProps) => {
+  const setRowUpdated = useAccountActionStore(
+    (state: any) => state.setRowUpdated
+  )
+  const currentAccount = useAccountActionStore(
+    (state: any) => state.currentAccount
+  )
+  const [isSaveAndNew, setIsSaveAndNew] = useState<boolean | null>(null)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      id: 0,
-      account: '',
-      description: '',
+      account: type === 'modify' ? currentAccount?.code : '',
+      description: type === 'modify' ? currentAccount?.description : '',
       icon: '',
-      type: '',
-      comments: '',
+      type: type === 'modify' ? currentAccount?.type : '',
+      comments: type === 'modify' ? currentAccount?.comments : '',
     },
   })
 
+  const { reset } = form
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (isSaveAndNew === null) {
+      return
+    }
+
     const account: Account = {
+      id: '',
       userId: userId,
       code: values.account,
       description: values.description,
@@ -50,13 +68,73 @@ const AccountsForm = ({ type, userId }: AccountsFormProps) => {
       comments: values.comments,
     }
 
-    console.log(account)
+    if (type === 'create') {
+      try {
+        const response: AuthResponse | undefined = await createAccount(account)
+        if (!response || !response.status) {
+          toast({
+            variant: 'destructive',
+            description: 'Ha ocurrido un error al crear la cuenta',
+          })
+          return
+        }
 
-    try {
-      await createAccount(account)
-    } catch (error) {
-      console.log(error)
+        if (response?.status !== 200) {
+          toast({
+            variant: 'destructive',
+            description: response?.data.message,
+          })
+          return
+        }
+
+        !isSaveAndNew && setOpen && setOpen(false)
+        isSaveAndNew && clear()
+
+        /** Notificamos el cambio para actualizar la lista de cuentas */
+        setRowUpdated(true)
+      } catch (error) {
+        toast({
+          variant: 'destructive',
+          description: 'Ha ocurrido un error al crear la cuenta',
+        })
+      }
+    } else {
+      try {
+        account.id = currentAccount.$id
+        const response: AuthResponse | undefined = await modifyAccount(account)
+
+        if (!response || !response.status) {
+          toast({
+            variant: 'destructive',
+            description: 'Ha ocurrido un error al modificar la cuenta',
+          })
+          return
+        }
+
+        if (response?.status !== 200) {
+          toast({
+            variant: 'destructive',
+            description: response?.data.message,
+          })
+          return
+        }
+
+        !isSaveAndNew && setOpen && setOpen(false)
+        isSaveAndNew && clear()
+
+        /** Notificamos el cambio para actualizar la lista de cuentas */
+        setRowUpdated(true)
+      } catch (error) {
+        toast({
+          variant: 'destructive',
+          description: 'Ha ocurrido un error al modificar la cuenta',
+        })
+      }
     }
+  }
+
+  const clear = () => {
+    reset()
   }
 
   return (
@@ -96,9 +174,37 @@ const AccountsForm = ({ type, userId }: AccountsFormProps) => {
             placeholder="Introduzca las observaciones (máximo 1000 caracteres)"
           />
         </div>
-        <Button className="mt-4 bg-blue-500 hover:bg-blue-500/70" type="submit">
-          Guardar
-        </Button>
+        <div className="flex items-center justify-between gap-2">
+          <Button
+            className="mt-4 max-w-[200px] border-gray-700 focus-visible:ring-0"
+            variant="outline"
+            type="button"
+            onClick={clear}>
+            Limpiar
+          </Button>
+
+          <div className="flex items-center justify-end gap-2">
+            <Button
+              className="mt-4 max-w-[200px]"
+              variant="ghost"
+              type="button"
+              onClick={() => setOpen(false)}>
+              Cancelar
+            </Button>
+            <Button
+              className="mt-4 max-w-[200px] bg-green-600 hover:bg-green-600/70"
+              type="submit"
+              onClick={() => setIsSaveAndNew(false)}>
+              Guardar
+            </Button>
+            <Button
+              className="mt-4 max-w-[200px] bg-blue-500 hover:bg-blue-500/70"
+              type="submit"
+              onClick={() => setIsSaveAndNew(true)}>
+              Guardar y nuevo
+            </Button>
+          </div>
+        </div>
       </form>
     </Form>
   )

@@ -4,43 +4,36 @@ import { useEffect, useState } from 'react'
 import { toast } from '@/hooks/use-toast'
 
 import { redirect } from 'next/navigation'
-import { CirclePlus } from 'lucide-react'
 
+import { CirclePlus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import DataTable from '@/components/DataTable'
-import { AccountColumns } from '@/constants'
+import { AccountColumns, RowActions } from '@/constants'
 import { accountColumns } from '@/lib/columns'
 import AccountModal from '@/components/AccountModal'
 import { useUserStore } from '@/store/auth-store'
 import { getAccounts } from '@/lib/actions/accounts.actions'
 import { AuthResponse } from '@/types'
 import { AccountModel } from '@/types/appwrite.types'
+import { useAccountActionStore } from '@/store/account-action-store'
 
 /** Array de etiquetas para las columnas con el texto traducido
  * Si alguna vez se traducen las columnas, reaprovechamos el array
  */
 const labels: string[] = []
-labels[AccountColumns.ACCOUNT] = 'Cuenta'
+labels[AccountColumns.CODE] = 'Cuenta'
 labels[AccountColumns.DESCRIPTION] = 'Descripción'
 labels[AccountColumns.ICON] = 'Icono'
 labels[AccountColumns.TYPE] = 'Tipo'
-labels[AccountColumns.ACTIONS] = 'Acciones'
-labels[AccountColumns.EDIT] = 'Modificar'
-labels[AccountColumns.DELETE] = 'Borrar'
 
-const columns = accountColumns({ labels })
+const actions: string[] = []
+actions[RowActions.HEADER] = 'Acciones'
+actions[RowActions.DELETE] = 'Borrar'
+actions[RowActions.EDIT] = 'Modificar'
 
-const parseError = (errorCode: number | undefined): void => {
-  if (!errorCode) {
-    toast({
-      variant: 'destructive',
-      description: 'Ha ocurrido un error al recuperar la lista de cuentas',
-    })
+const columns = accountColumns({ labels, actions })
 
-    return
-  }
-}
-
+/** Utilidades usadas por el componente */
 const parseOutputData = (data: AccountModel[]): AccountModel[] => {
   return data?.map((account: AccountModel) => {
     return {
@@ -54,36 +47,59 @@ const parseOutputData = (data: AccountModel[]): AccountModel[] => {
 const AccountsPage = () => {
   const [openAccountDialog, setOpenAccountDialog] = useState(false)
   const state = useUserStore((state: any) => state)
+  const [data, setData] = useState<AccountModel[]>([])
+  const rowDeleted = useAccountActionStore((state: any) => state.rowDeleted)
+  const rowUpdated = useAccountActionStore((state: any) => state.rowUpdated)
+  const setRowUpdated = useAccountActionStore(
+    (state: any) => state.setRowUpdated
+  )
+  const setRowDeleted = useAccountActionStore(
+    (state: any) => state.setRowDeleted
+  )
+
   const { user } = state
   let response: AuthResponse | undefined
-  let data: AccountModel[]
+
+  useEffect(() => {
+    getAccountsList(user.$id)
+  }, [])
 
   useEffect(() => {
     if (!state || !user || !user.$id) {
       redirect(`/`)
     }
 
-    const getAccountsList = async (userId: string) => {
-      response = await getAccounts(userId)
-      console.log('response', response)
+    if (rowUpdated || rowDeleted) {
+      getAccountsList(user.$id)
+    }
+  }, [user.$id, rowUpdated, rowDeleted])
 
-      if (!response || !response.data) {
-        toast({
-          variant: 'destructive',
-          description: 'Ha ocurrido un error al recuperar la lista de cuentas',
-        })
-      }
+  const getAccountsList = async (userId: string) => {
+    response = await getAccounts(userId)
 
-      if (response?.status !== 200) {
-        parseError(response?.status)
-        return
-      }
-      console.log('data', data)
-      parseOutputData(response?.data)
+    if (!response) {
+      toast({
+        variant: 'destructive',
+        description: 'Ha ocurrido un error al recuperar la lista de cuentas',
+      })
+      return
     }
 
-    getAccountsList(user.$id)
-  }, [user.$id])
+    if (response?.status !== 200) {
+      toast({
+        variant: 'destructive',
+        description: response?.data.message,
+      })
+      return
+    }
+    setData(parseOutputData(response?.data))
+    if (rowUpdated) {
+      setRowUpdated(false)
+    }
+    if (rowDeleted) {
+      setRowDeleted(false)
+    }
+  }
 
   return (
     <div className="flex h-full w-full flex-col bg-gray-300/70 p-4">
@@ -99,7 +115,7 @@ const AccountsPage = () => {
         </Button>
       </header>
       <div className="mt-2 flex h-full w-full rounded-md bg-white p-4">
-        <DataTable columns={columns} data={data} />
+        <DataTable columns={columns} data={data} hiddenColumnsLabels={labels} />
       </div>
       <div className="w-min-[600px]">
         <AccountModal

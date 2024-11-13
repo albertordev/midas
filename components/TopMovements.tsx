@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation'
 
 import { cn, formatAmount } from '@/lib/utils'
 import Image from 'next/image'
+import { MovementAccount, TopMovementsProps } from '@/types'
 
 const TopMovements = ({ type, header, accounts }: TopMovementsProps) => {
   const pathname = usePathname()

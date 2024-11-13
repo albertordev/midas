@@ -1,8 +1,19 @@
 export enum AccountColumns {
-  ACCOUNT,
+  CODE,
   DESCRIPTION,
   ICON,
   TYPE,
+  ACTIONS,
+  EDIT,
+  DELETE,
+}
+
+export enum MovementColumns {
+  ACCOUNT,
+  DESCRIPTION,
+  TYPE,
+  DATE,
+  AMOUNT,
   ACTIONS,
   EDIT,
   DELETE,
@@ -15,4 +26,10 @@ export enum FormFieldType {
   DATE_PICKER = 'datePicker',
   SELECT = 'select',
   SKELETON = 'skeleton',
+}
+
+export enum RowActions {
+  HEADER,
+  DELETE,
+  EDIT,
 }

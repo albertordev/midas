@@ -39,9 +39,9 @@ const Menubar = () => {
       route: `/${path}/balance`,
     },
     {
-      label: 'Alta Movimientos',
+      label: 'Movimientos',
       icon: '/icons/layer-plus.svg',
-      route: `/${path}/new-movements`,
+      route: `/${path}/movements`,
     },
     {
       label: 'Histórico',

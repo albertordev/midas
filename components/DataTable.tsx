@@ -32,13 +32,17 @@ import {
 import { useState } from 'react'
 
 interface DataTableProps<TData, TValue> {
+  readonly?: boolean
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  hiddenColumnsLabels?: string[]
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  readonly = false,
+  hiddenColumnsLabels = [],
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -70,36 +74,42 @@ export function DataTable<TData, TValue>({
           onChange={e => table.setGlobalFilter(String(e.target.value))}
           className="input w-full focus-visible:ring-0"
         />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
-              className="ml-auto border-gray-300 text-gray-600 hover:text-gray-600/50 focus-visible:ring-0">
-              Columnas
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              /** No permitimos ocultar la columna de acciones */
-              .filter(
-                (column, index) =>
-                  index !== table.getAllColumns().length - 1 &&
-                  column.getCanHide()
-              )
-              .map((column, index) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    className="cursor-pointer"
-                    key={column.id}
-                    checked={column.getIsVisible()}
-                    onCheckedChange={value => column.toggleVisibility(!!value)}>
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
+        {hiddenColumnsLabels && hiddenColumnsLabels.length > 0 && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                className="ml-auto border-gray-300 text-gray-600 hover:text-gray-600/50 focus-visible:ring-0">
+                Columnas
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                /** No permitimos ocultar la columna de acciones en las tablas de
+                 *  edición de datos
+                 */
+                .filter(
+                  (column, index) =>
+                    (readonly || index !== table.getAllColumns().length - 1) &&
+                    column.getCanHide()
                 )
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+                .map((column, index) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      className="cursor-pointer"
+                      key={column.id}
+                      checked={column.getIsVisible()}
+                      onCheckedChange={value =>
+                        column.toggleVisibility(!!value)
+                      }>
+                      {hiddenColumnsLabels[index]}
+                    </DropdownMenuCheckboxItem>
+                  )
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
       <div className="rounded-md border">
         <Table>
@@ -131,9 +141,7 @@ export function DataTable<TData, TValue>({
                   className="odd:bg-gray-300/70"
                   data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map(cell => (
-                    <TableCell
-                      key={cell.id}
-                      className="text-gray-600 first:text-center">
+                    <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()

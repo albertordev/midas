@@ -10,9 +10,9 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { EntityFormProps } from '@/types'
-import AccountsForm from '@/components/forms/AccountsForm'
+import MovementsForm from '@/components/forms/MovementsForm'
 
-const AccountModal = ({ type, userId, open, setOpen }: EntityFormProps) => {
+const AccountModal = ({ userId, type, open, setOpen }: EntityFormProps) => {
   const [modalOpen, setModalOpen] = useState(open)
 
   useEffect(() => {
@@ -28,18 +28,18 @@ const AccountModal = ({ type, userId, open, setOpen }: EntityFormProps) => {
       <DialogContent className="flex min-w-[750px] flex-col">
         <DialogHeader className="w-full text-gray-600">
           {type === 'create' && (
-            <DialogTitle className="text-3xl">Nueva cuenta</DialogTitle>
+            <DialogTitle className="text-3xl">Nuevo movimiento</DialogTitle>
           )}
           {type === 'modify' && (
             <DialogTitle className="text-3xl">
-              Modificación de la cuenta
+              Modificación del movimiento
             </DialogTitle>
           )}
           <DialogDescription>
-            Introduzca los datos de la cuenta
+            Introduzca los datos del ingreso o gasto
           </DialogDescription>
         </DialogHeader>
-        <AccountsForm type={type} userId={userId} setOpen={setOpen} />
+        <MovementsForm userId={userId} setOpen={setOpen} type={type} />
       </DialogContent>
     </Dialog>
   )

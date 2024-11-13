@@ -9,10 +9,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { EntityFormProps } from '@/types'
-import AccountsForm from '@/components/forms/AccountsForm'
+import { HistoryFiltersProps } from '@/types'
+import HistoryFiltersForm from '@/components/forms/HistoryFiltersForm'
 
-const AccountModal = ({ type, userId, open, setOpen }: EntityFormProps) => {
+const HistoryFiltersModal = ({
+  userId,
+  open,
+  setOpen,
+}: HistoryFiltersProps) => {
   const [modalOpen, setModalOpen] = useState(open)
 
   useEffect(() => {
@@ -27,22 +31,17 @@ const AccountModal = ({ type, userId, open, setOpen }: EntityFormProps) => {
     <Dialog open={modalOpen} onOpenChange={setModalOpen}>
       <DialogContent className="flex min-w-[750px] flex-col">
         <DialogHeader className="w-full text-gray-600">
-          {type === 'create' && (
-            <DialogTitle className="text-3xl">Nueva cuenta</DialogTitle>
-          )}
-          {type === 'modify' && (
-            <DialogTitle className="text-3xl">
-              Modificación de la cuenta
-            </DialogTitle>
-          )}
+          <DialogTitle className="text-3xl">
+            Filtro de histórico de movimientos
+          </DialogTitle>
           <DialogDescription>
-            Introduzca los datos de la cuenta
+            Filtre la lista de movimientos para ver los que se han realizado
           </DialogDescription>
         </DialogHeader>
-        <AccountsForm type={type} userId={userId} setOpen={setOpen} />
+        <HistoryFiltersForm userId={userId} setOpen={setOpen} />
       </DialogContent>
     </Dialog>
   )
 }
 
-export default AccountModal
+export default HistoryFiltersModal

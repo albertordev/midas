@@ -1,6 +1,8 @@
 import Image from 'next/image'
 import ReactDatePicker from 'react-datepicker'
 import { Control } from 'react-hook-form'
+import { registerLocale, setDefaultLocale } from 'react-datepicker'
+import { es } from 'date-fns/locale/es'
 
 import {
   FormControl,
@@ -14,6 +16,8 @@ import { Select, SelectContent, SelectTrigger, SelectValue } from './ui/select'
 import { Textarea } from './ui/textarea'
 import { FormFieldType } from '@/constants'
 import { cn } from '@/lib/utils'
+
+import 'react-datepicker/dist/react-datepicker.css'
 
 interface CustomProps {
   control: Control<any>
@@ -29,13 +33,29 @@ interface CustomProps {
   children?: React.ReactNode
   renderSkeleton?: (field: any) => React.ReactNode
   fieldType: FormFieldType
+  onSelectValueChanged?: (value: any) => void
 }
 
-const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
+registerLocale('es', es)
+
+const RenderInput = ({
+  field,
+  props,
+  onSelectValueChanged,
+}: {
+  field: any
+  props: CustomProps
+  onSelectValueChanged: (value: any) => void
+}) => {
+  const handleSelectValueChanged = (value: string) => {
+    field.onChange(value)
+    onSelectValueChanged(value)
+  }
+
   switch (props.fieldType) {
     case FormFieldType.INPUT:
       return (
-        <div className="border-dark-500 bg-dark-400 relative flex rounded-md border">
+        <div className="relative flex rounded-md border">
           {props.iconSrc && (
             <Image
               src={props.iconSrc}
@@ -70,22 +90,22 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
       )
     case FormFieldType.DATE_PICKER:
       return (
-        <div className="border-dark-500 bg-dark-400 flex rounded-md border">
+        <div className="flex items-center rounded-md border border-gray-300 bg-white py-[0.5rem] focus:border-gray-500 focus-visible:ring-0">
           <Image
-            src="/assets/icons/calendar.svg"
+            src="/icons/calendar.svg"
             height={24}
             width={24}
             alt="user"
-            className="ml-2"
+            className="mx-2"
           />
           <FormControl>
             <ReactDatePicker
+              className="input outline-none focus-visible:ring-0"
               showTimeSelect={props.showTimeSelect ?? false}
               selected={field.value}
+              locale="es"
               onChange={(date: Date | null) => field.onChange(date)}
-              timeInputLabel="Time:"
-              dateFormat={props.dateFormat ?? 'MM/dd/yyyy'}
-              wrapperClassName="date-picker"
+              dateFormat={props.dateFormat ?? 'dd/MM/yyyy'}
             />
           </FormControl>
         </div>
@@ -93,13 +113,16 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
     case FormFieldType.SELECT:
       return (
         <FormControl>
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
-            <FormControl>
+          <Select
+            onValueChange={handleSelectValueChanged}
+            defaultValue={undefined}
+            value={field.value}>
+            <FormControl className="rounded-md border border-gray-300 bg-white focus:border-gray-500 focus-visible:ring-0">
               <SelectTrigger>
                 <SelectValue placeholder={props.placeholder} />
               </SelectTrigger>
             </FormControl>
-            <SelectContent className="border-gray-300 bg-white focus:border-gray-500 focus-visible:ring-0">
+            <SelectContent className="rounded-md border border-gray-300 bg-white focus:border-gray-500 focus-visible:ring-0">
               {props.children}
             </SelectContent>
           </Select>
@@ -113,7 +136,11 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
 }
 
 const CustomFormField = (props: CustomProps) => {
-  const { control, name, label } = props
+  const { control, name, label, onSelectValueChanged } = props
+
+  // const onSelectValueChanged = (value: any) => {
+  //   console.log(value)
+  // }
 
   return (
     <FormField
@@ -124,7 +151,13 @@ const CustomFormField = (props: CustomProps) => {
           {props.fieldType !== FormFieldType.CHECKBOX && label && (
             <FormLabel className="shad-input-label">{label}</FormLabel>
           )}
-          <RenderInput field={field} props={props} />
+          <RenderInput
+            field={field}
+            props={props}
+            onSelectValueChanged={(value: any) =>
+              onSelectValueChanged && onSelectValueChanged(value)
+            }
+          />
 
           <FormMessage className="shad-error" />
         </FormItem>

@@ -19,3 +19,20 @@ export interface AccountModel extends Models.Document {
 export interface UserModel extends Models.Document {
   name: string
 }
+
+export interface MovementModel extends Models.Document {
+  userId: string
+  account: string
+  description: string
+  date: Date
+  amount: number
+}
+
+export interface BalanceModel extends Models.Document {
+  userId: string
+  account: string
+  type: string
+  period: number
+  year: number
+  amount: number
+}

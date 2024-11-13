@@ -86,4 +86,8 @@ body,
   .input {
     @apply border-gray-300 bg-transparent text-gray-600 focus:border-gray-500 focus-visible:ring-0;
   }
+
+  .date-picker {
+    @apply h-11 w-full overflow-hidden rounded-md border-gray-300 border-transparent px-3 outline-none placeholder:text-gray-800 !important;
+  }
 }
