@@ -10,10 +10,10 @@ import { Form } from '@/components/ui/form'
 import { loginUser } from '@/lib/actions/user.actions'
 import { useParams, useRouter } from 'next/navigation'
 import { AuthResponse } from '@/types'
-import { useToast } from '@/hooks/use-toast'
 import { useState } from 'react'
 import Image from 'next/image'
 import { useUserStore } from '@/store/auth-store'
+import { toast } from '@/hooks/use-toast'
 
 const parseError = (errorCode: number | undefined): void => {
   if (!errorCode) {
@@ -59,8 +59,6 @@ const LoginForm = () => {
   const { locale } = params
   const [isLoading, setIsLoading] = useState(false)
   const saveUser = useUserStore((state: any) => state.saveUser)
-
-  const { toast } = useToast()
 
   const formSchema = z.object({
     username: z
@@ -145,7 +143,7 @@ const LoginForm = () => {
               alt="Loading..."
             />
           )}
-          Iniciar sesión
+          {`${isLoading ? 'Cargando...' : 'Iniciar sesión'}`}
         </Button>
       </form>
     </Form>

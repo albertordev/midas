@@ -2,9 +2,19 @@ import { ColumnDef } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
 
 import { ArrowUpDown } from 'lucide-react'
-import { AccountColumns, MovementColumns } from '@/constants'
+import {
+  AccountColumns,
+  MovementColumns,
+  BalanceColumns,
+  RowActions,
+} from '@/constants'
 import Image from 'next/image'
-import { AccountModel, MovementModel } from '@/types/appwrite.types'
+import {
+  AccountModel,
+  BudgetModel,
+  MovementModel,
+  BalanceModel,
+} from '@/types/appwrite.types'
 import CellAction from '@/components/CellAction'
 import { formatAmount } from './utils'
 
@@ -46,7 +56,7 @@ export const accountColumns: ({
       accessorKey: 'description',
       header: ({ column }) => {
         return (
-          <p className="min-w-[100px] text-center">
+          <p className="hidden min-w-[100px] text-center sm:block">
             <Button
               variant="ghost"
               onClick={() =>
@@ -60,7 +70,7 @@ export const accountColumns: ({
       },
       cell: ({ row }) => {
         return (
-          <p className="text-start text-gray-500">
+          <p className="hidden text-start text-gray-500 sm:block">
             {row.getValue('description')}
           </p>
         )
@@ -111,7 +121,7 @@ export const accountColumns: ({
     {
       id: 'actions',
       header: () => (
-        <div className="text-center">{labels[AccountColumns.ACTIONS]}</div>
+        <div className="text-center">{labels[RowActions.HEADER]}</div>
       ),
       cell: ({ row }) => (
         <CellAction
@@ -163,7 +173,7 @@ export const movementColumns: ({
       accessorKey: 'description',
       header: ({ column }) => {
         return (
-          <p className="min-w-[100px] text-center">
+          <p className="text-center md:min-w-[100px]">
             <Button
               variant="ghost"
               onClick={() =>
@@ -187,7 +197,7 @@ export const movementColumns: ({
       accessorKey: 'type',
       header: ({ column }) => {
         return (
-          <p className="min-w-[100px] text-center">
+          <p className="text-center md:min-w-[100px]">
             <Button
               variant="ghost"
               onClick={() =>
@@ -245,7 +255,7 @@ export const movementColumns: ({
     {
       id: 'actions',
       header: () => (
-        <div className="text-center">{labels[MovementColumns.ACTIONS]}</div>
+        <div className="text-center">{labels[RowActions.HEADER]}</div>
       ),
       cell: ({ row }) => (
         <CellAction
@@ -289,7 +299,7 @@ export const historyColumns: ({
       accessorKey: 'description',
       header: ({ column }) => {
         return (
-          <p className="min-w-[100px] text-center">
+          <p className="text-center md:min-w-[100px]">
             <Button
               variant="ghost"
               onClick={() =>
@@ -313,7 +323,7 @@ export const historyColumns: ({
       accessorKey: 'type',
       header: ({ column }) => {
         return (
-          <p className="min-w-[100px] text-center">
+          <p className="text-center md:min-w-[100px]">
             <Button
               variant="ghost"
               onClick={() =>
@@ -355,6 +365,252 @@ export const historyColumns: ({
                 column.toggleSorting(column.getIsSorted() === 'asc')
               }>
               {labels[MovementColumns.AMOUNT]}
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        )
+      },
+      cell: ({ row }) => {
+        return (
+          <div className="text-center text-gray-500">
+            {formatAmount(row.getValue('amount'), 'es')}
+          </div>
+        )
+      },
+    },
+  ]
+}
+
+export const balanceColumns: ({
+  labels,
+}: {
+  labels: string[]
+}) => ColumnDef<BalanceModel>[] = ({ labels }: { labels: string[] }) => {
+  return [
+    {
+      accessorKey: 'account',
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() =>
+              column.toggleSorting(column.getIsSorted() === 'asc')
+            }>
+            {labels[BalanceColumns.ACCOUNT]}
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
+      cell: ({ row }) => {
+        return (
+          <p className="text-center text-gray-500">{row.getValue('account')}</p>
+        )
+      },
+    },
+    {
+      accessorKey: 'accountName',
+      header: ({ column }) => {
+        return (
+          <p className="hidden min-w-[100px] text-center sm:block">
+            <Button
+              variant="ghost"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === 'asc')
+              }>
+              {labels[BalanceColumns.NAME]}
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+          </p>
+        )
+      },
+      cell: ({ row }) => {
+        return (
+          <p className="hidden text-start text-gray-500 sm:block">
+            {row.getValue('accountName')}
+          </p>
+        )
+      },
+    },
+    {
+      accessorKey: 'type',
+      header: ({ column }) => {
+        return (
+          <p className="min-w-[100px] text-center">
+            <Button
+              variant="ghost"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === 'asc')
+              }>
+              {labels[BalanceColumns.TYPE]}
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+          </p>
+        )
+      },
+      cell: ({ row }) => {
+        return (
+          <p className="text-center text-gray-500">{row.getValue('type')}</p>
+        )
+      },
+    },
+    {
+      accessorKey: 'year',
+      header: () => (
+        <div className="text-center">{labels[BalanceColumns.YEAR]}</div>
+      ),
+      cell: ({ row }) => {
+        return (
+          <p className="text-center text-gray-500">{row.getValue('year')}</p>
+        )
+      },
+    },
+    {
+      accessorKey: 'periodName',
+      header: () => (
+        <div className="text-center">{labels[BalanceColumns.PERIOD]}</div>
+      ),
+      cell: ({ row }) => {
+        return (
+          <p className="text-center text-gray-500">
+            {row.getValue('periodName')}
+          </p>
+        )
+      },
+    },
+    {
+      accessorKey: 'amount',
+      header: ({ column }) => {
+        return (
+          <div className="text-center">
+            <Button
+              variant="ghost"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === 'asc')
+              }>
+              {labels[BalanceColumns.AMOUNT]}
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        )
+      },
+      cell: ({ row }) => {
+        return (
+          <div className="text-center text-gray-500">
+            {formatAmount(row.getValue('amount'), 'es')}
+          </div>
+        )
+      },
+    },
+  ]
+}
+
+export const budgetColumns: ({
+  labels,
+}: {
+  labels: string[]
+}) => ColumnDef<BudgetModel>[] = ({ labels }: { labels: string[] }) => {
+  return [
+    {
+      accessorKey: 'account',
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() =>
+              column.toggleSorting(column.getIsSorted() === 'asc')
+            }>
+            {labels[BalanceColumns.ACCOUNT]}
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
+      cell: ({ row }) => {
+        return (
+          <p className="text-center text-gray-500">{row.getValue('account')}</p>
+        )
+      },
+    },
+    {
+      accessorKey: 'accountName',
+      header: ({ column }) => {
+        return (
+          <p className="hidden text-center sm:block md:min-w-[100px]">
+            <Button
+              variant="ghost"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === 'asc')
+              }>
+              {labels[BalanceColumns.NAME]}
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+          </p>
+        )
+      },
+      cell: ({ row }) => {
+        return (
+          <p className="hidden text-start text-gray-500 sm:block">
+            {row.getValue('accountName')}
+          </p>
+        )
+      },
+    },
+    {
+      accessorKey: 'type',
+      header: ({ column }) => {
+        return (
+          <p className="text-center md:min-w-[100px]">
+            <Button
+              variant="ghost"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === 'asc')
+              }>
+              {labels[BalanceColumns.TYPE]}
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+          </p>
+        )
+      },
+      cell: ({ row }) => {
+        return (
+          <p className="text-center text-gray-500">{row.getValue('type')}</p>
+        )
+      },
+    },
+    {
+      accessorKey: 'year',
+      header: () => (
+        <div className="text-center">{labels[BalanceColumns.YEAR]}</div>
+      ),
+      cell: ({ row }) => {
+        return (
+          <p className="text-center text-gray-500">{row.getValue('year')}</p>
+        )
+      },
+    },
+    {
+      accessorKey: 'periodName',
+      header: () => (
+        <div className="text-center">{labels[BalanceColumns.PERIOD]}</div>
+      ),
+      cell: ({ row }) => {
+        return (
+          <p className="text-center text-gray-500">
+            {row.getValue('periodName')}
+          </p>
+        )
+      },
+    },
+    {
+      accessorKey: 'amount',
+      header: ({ column }) => {
+        return (
+          <div className="text-center">
+            <Button
+              variant="ghost"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === 'asc')
+              }>
+              {labels[BalanceColumns.AMOUNT]}
               <ArrowUpDown className="ml-2 h-4 w-4" />
             </Button>
           </div>

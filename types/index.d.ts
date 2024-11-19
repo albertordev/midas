@@ -14,7 +14,7 @@ declare type DashboardCardProps = {
 
 declare type MovementAccount = {
   name: string
-  amount: number
+  value: number
 }
 
 declare type TopMovementsProps = {
@@ -37,7 +37,7 @@ export type EntityFormProps = {
   setOpen?: Dispatch<SetStateAction<boolean>>
 }
 
-export type HistoryFiltersProps = {
+export type FiltersProps = {
   userId: string
   open?: boolean
   setOpen?: Dispatch<SetStateAction<boolean>>
@@ -74,6 +74,7 @@ export type Movement = {
   id: string
   userId: string
   account: string
+  accountName?: string
   type: string
   description: string
   date: Date
@@ -84,6 +85,30 @@ export type Balance = {
   id: string
   userId: string
   account: string
+  accountName?: string
+  type: string
+  period: number
+  year: number
+  amount: number
+}
+
+export type DashboardBalance = {
+  monthName: string
+  period: number
+  amount: number
+}
+
+export type BalanceVsBudget = {
+  period: string
+  balance: number
+  budget: number
+}
+
+export type Budget = {
+  id: string
+  userId: string
+  account: string
+  accountName?: string
   type: string
   period: number
   year: number
@@ -99,4 +124,31 @@ export type HistoryFiltersParams = {
   dateTo?: Date | null
   amountFrom?: number
   amountTo?: number
+  limit?: number
+}
+
+export type BalanceFiltersParams = {
+  userId: string
+  account?: string
+  type?: string
+  year?: number
+  period?: number
+}
+
+export type BudgetFiltersParams = {
+  userId: string
+  account?: string
+  type?: string
+  year?: number
+  period?: number
+}
+
+export type SortedBalanceParams = {
+  userId: string
+  account?: string
+  type?: string
+  year?: number
+  period?: number
+  sort?: string
+  order?: string
 }

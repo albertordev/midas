@@ -12,7 +12,7 @@ import {
 import { EntityFormProps } from '@/types'
 import MovementsForm from '@/components/forms/MovementsForm'
 
-const AccountModal = ({ userId, type, open, setOpen }: EntityFormProps) => {
+const MovementModal = ({ userId, type, open, setOpen }: EntityFormProps) => {
   const [modalOpen, setModalOpen] = useState(open)
 
   useEffect(() => {
@@ -25,7 +25,7 @@ const AccountModal = ({ userId, type, open, setOpen }: EntityFormProps) => {
 
   return (
     <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-      <DialogContent className="flex min-w-[750px] flex-col">
+      <DialogContent className="flex w-full flex-col rounded-md md:min-w-[750px]">
         <DialogHeader className="w-full text-gray-600">
           {type === 'create' && (
             <DialogTitle className="text-3xl">Nuevo movimiento</DialogTitle>
@@ -45,4 +45,4 @@ const AccountModal = ({ userId, type, open, setOpen }: EntityFormProps) => {
   )
 }
 
-export default AccountModal
+export default MovementModal

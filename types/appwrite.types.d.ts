@@ -31,6 +31,17 @@ export interface MovementModel extends Models.Document {
 export interface BalanceModel extends Models.Document {
   userId: string
   account: string
+  accountName?: string
+  type: string
+  period: number
+  year: number
+  amount: number
+}
+
+export interface BudgetModel extends Models.Document {
+  userId: string
+  account: string
+  accountName?: string
   type: string
   period: number
   year: number

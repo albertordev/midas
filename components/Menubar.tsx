@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation'
 
 const Menubar = () => {
   const pathname = usePathname()
-  const saveUser = useUserStore((state: any) => state.saveUser)
+  const resetUser = useUserStore((state: any) => state.resetUser)
   const router = useRouter()
   const user = useUserStore((state: any) => state.user)
   let path: string = ''
@@ -49,16 +49,15 @@ const Menubar = () => {
       route: `/${path}/history`,
     },
     {
-      label: 'Presupuesto',
+      label: 'Presupuestos',
       icon: '/icons/trending-up.svg',
       route: `/${path}/budget`,
     },
   ]
 
   const LogOut = () => {
-    saveUser({ user: null })
+    resetUser()
     localStorage.removeItem('midas-user')
-    router.push(`/`)
   }
 
   return (
@@ -83,6 +82,7 @@ const Menubar = () => {
                     alt={item.label}
                     width={20}
                     height={20}
+                    className="min-h-4 min-w-4"
                   />
                   <span className="menuText">{item.label}</span>
                 </Link>
@@ -91,10 +91,14 @@ const Menubar = () => {
           })}
         </ul>
       </nav>
-      <footer className="flex items-center justify-center p-4 md:justify-between">
-        <div className="hidden flex-col text-start text-xs text-gray-500 lg:flex">
-          <div>Avatar</div>
-          <span className="text-[16px] font-semibold">{user && user.name}</span>
+      <footer className="flex flex-col items-center justify-center gap-2 p-4 md:justify-between lg:flex-row">
+        <div className="flex items-center justify-center gap-2 text-start text-xs text-gray-500">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-500 text-white">
+            A
+          </div>
+          <span className="hidden text-[16px] font-semibold lg:block">
+            {user && user.name}
+          </span>
         </div>
         <LogOutIcon className="cursor-pointer text-gray-500" onClick={LogOut} />
       </footer>

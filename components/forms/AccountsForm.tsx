@@ -176,7 +176,7 @@ const AccountsForm = ({ type, userId, setOpen }: EntityFormProps) => {
         </div>
         <div className="flex items-center justify-between gap-2">
           <Button
-            className="mt-4 max-w-[200px] border-gray-700 focus-visible:ring-0"
+            className="sm:text-md mt-4 max-w-[200px] border-gray-700 text-xs focus-visible:ring-0"
             variant="outline"
             type="button"
             onClick={clear}>
@@ -185,20 +185,20 @@ const AccountsForm = ({ type, userId, setOpen }: EntityFormProps) => {
 
           <div className="flex items-center justify-end gap-2">
             <Button
-              className="mt-4 max-w-[200px]"
+              className="sm:text-md mt-4 max-w-[200px] text-xs"
               variant="ghost"
               type="button"
               onClick={() => setOpen(false)}>
               Cancelar
             </Button>
             <Button
-              className="mt-4 max-w-[200px] bg-green-600 hover:bg-green-600/70"
+              className="sm:text-md mt-4 max-w-[200px] bg-green-600 text-xs hover:bg-green-600/70"
               type="submit"
               onClick={() => setIsSaveAndNew(false)}>
               Guardar
             </Button>
             <Button
-              className="mt-4 max-w-[200px] bg-blue-500 hover:bg-blue-500/70"
+              className="sm:text-md mt-4 max-w-[200px] bg-blue-500 text-xs hover:bg-blue-500/70"
               type="submit"
               onClick={() => setIsSaveAndNew(true)}>
               Guardar y nuevo

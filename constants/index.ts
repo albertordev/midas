@@ -3,9 +3,6 @@ export enum AccountColumns {
   DESCRIPTION,
   ICON,
   TYPE,
-  ACTIONS,
-  EDIT,
-  DELETE,
 }
 
 export enum MovementColumns {
@@ -14,9 +11,24 @@ export enum MovementColumns {
   TYPE,
   DATE,
   AMOUNT,
-  ACTIONS,
-  EDIT,
-  DELETE,
+}
+
+export enum BalanceColumns {
+  ACCOUNT,
+  NAME,
+  TYPE,
+  PERIOD,
+  YEAR,
+  AMOUNT,
+}
+
+export enum BudgetColumns {
+  ACCOUNT,
+  NAME,
+  TYPE,
+  PERIOD,
+  YEAR,
+  AMOUNT,
 }
 
 export enum FormFieldType {

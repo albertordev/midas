@@ -6,6 +6,7 @@ import { AuthResponse, Balance, HistoryFiltersParams, Movement } from '@/types'
 import { Query } from 'node-appwrite'
 import { ID } from 'node-appwrite'
 import { MovementModel } from '@/types/appwrite.types'
+import { createBalance, deleteBalance, modifyBalance } from './balance.actions'
 
 const {
   APPWRITE_PROJECT_ID,
@@ -119,6 +120,7 @@ export const createMovement = async (movement: Movement) => {
         id: '',
         userId: movement.userId,
         account: movement.account,
+        accountName: movement.accountName,
         type: movement.type,
         period: movement.date.getMonth() + 1,
         year: movement.date.getFullYear(),
@@ -130,6 +132,7 @@ export const createMovement = async (movement: Movement) => {
         id: existingBalance.documents[0].$id,
         userId: movement.userId,
         account: movement.account,
+        accountName: movement.accountName,
         type: movement.type,
         period: movement.date.getMonth() + 1,
         year: movement.date.getFullYear(),
@@ -161,42 +164,6 @@ export const createMovement = async (movement: Movement) => {
       return {
         data: {
           message: 'Ha ocurrido un error al crear el movimiento',
-        },
-        status: errorCode,
-      } as AuthResponse
-    }
-  }
-}
-
-/** CREAR SALDO */
-export const createBalance = async (balance: Balance) => {
-  const balanceToCreate = {
-    userId: balance.userId,
-    account: balance.account,
-    type: balance.type,
-    period: balance.period,
-    year: balance.year,
-    amount: balance.amount,
-  }
-  try {
-    const balanceCreated = await databases.createDocument(
-      APPWRITE_DATABASE_ID!,
-      APPWRITE_BALANCE_COLLECTION_ID!,
-      ID.unique(),
-      balanceToCreate
-    )
-
-    return {
-      data: balanceCreated,
-      status: 200,
-    } as AuthResponse
-  } catch (error: sdk.AppwriteException | any) {
-    if (error) {
-      const errorCode = error?.code
-
-      return {
-        data: {
-          message: `Ha ocurrido un error al crear el registro de saldo. No se ha podido acumular la cantidad ${balanceToCreate}`,
         },
         status: errorCode,
       } as AuthResponse
@@ -280,6 +247,7 @@ export const modifyMovement = async (movement: Movement) => {
       id: currentBalance.$id,
       userId: movement.userId,
       account: currentBalance.account,
+      accountName: movement.accountName,
       type: currentBalance.type,
       period: currentBalance.period,
       year: currentBalance.year,
@@ -308,42 +276,6 @@ export const modifyMovement = async (movement: Movement) => {
       return {
         data: {
           message: 'Ha ocurrido un error al modificar el movimiento',
-        },
-        status: errorCode,
-      } as AuthResponse
-    }
-  }
-}
-
-/** MODIFICAR SALDO */
-export const modifyBalance = async (balance: Balance) => {
-  const balanceToUpdate = {
-    userId: balance.userId,
-    account: balance.account,
-    type: balance.type,
-    period: balance.period,
-    year: balance.year,
-    amount: balance.amount,
-  }
-  try {
-    const balanceUpdated = await databases.updateDocument(
-      APPWRITE_DATABASE_ID!,
-      APPWRITE_BALANCE_COLLECTION_ID!,
-      balance.id,
-      balanceToUpdate
-    )
-
-    return {
-      data: balanceUpdated,
-      status: 200,
-    } as AuthResponse
-  } catch (error: sdk.AppwriteException | any) {
-    if (error) {
-      const errorCode = error?.code
-
-      return {
-        data: {
-          message: `Ha ocurrido un error al actualizar el saldo. No se ha podido acumular el importe ${balance.amount}`,
         },
         status: errorCode,
       } as AuthResponse
@@ -420,6 +352,7 @@ export const deleteMovement = async (movementId: string) => {
         id: existingBalance.$id,
         userId: existingBalance.userId,
         account: existingBalance.account,
+        accountName: existingBalance.accountName,
         type: existingBalance.type,
         period: existingBalance.period,
         year: existingMovement.year,
@@ -443,40 +376,11 @@ export const deleteMovement = async (movementId: string) => {
     } as AuthResponse
   } catch (error: sdk.AppwriteException | any) {
     if (error) {
-      console.log(error)
       const errorCode = error?.code
 
       return {
         data: {
           message: 'Ha ocurrido un error al eliminar el movimiento',
-        },
-        status: errorCode,
-      } as AuthResponse
-    }
-  }
-}
-
-/** ELIMINAR SALDO */
-export const deleteBalance = async (balanceId: string) => {
-  try {
-    const balanceDeleted = await databases.deleteDocument(
-      APPWRITE_DATABASE_ID!,
-      APPWRITE_BALANCE_COLLECTION_ID!,
-      balanceId
-    )
-
-    return {
-      data: balanceDeleted,
-      status: 200,
-    } as AuthResponse
-  } catch (error: sdk.AppwriteException | any) {
-    if (error) {
-      const errorCode = error?.code
-
-      return {
-        data: {
-          message:
-            'Ha ocurrido un error al actualizar el saldo. No se ha podido acumular el importe',
         },
         status: errorCode,
       } as AuthResponse
@@ -497,18 +401,20 @@ export const getMovementsHistory = async (
     dateTo,
     amountFrom,
     amountTo,
+    limit,
   } = historyFilters
 
   try {
     const query: any = [Query.equal('userId', [userId])]
-    if (account) query.push(Query.equal('account', [account]))
-    if (type) query.push(Query.equal('type', [type]))
-    if (description) query.push(Query.contains('description', [description]))
-    if (dateFrom)
+    account && query.push(Query.equal('account', [account]))
+    type && query.push(Query.equal('type', [type]))
+    description && query.push(Query.contains('description', [description]))
+    dateFrom &&
       query.push(Query.greaterThanEqual('date', [dateFrom.toISOString()]))
-    if (dateTo) query.push(Query.lessThanEqual('date', [dateTo.toISOString()]))
-    if (amountFrom) query.push(Query.greaterThanEqual('amount', [amountFrom]))
-    if (amountTo) query.push(Query.lessThanEqual('amount', [amountTo]))
+    dateTo && query.push(Query.lessThanEqual('date', [dateTo.toISOString()]))
+    amountFrom && query.push(Query.greaterThanEqual('amount', [amountFrom]))
+    amountTo && query.push(Query.lessThanEqual('amount', [amountTo]))
+    limit && query.push(Query.limit(limit))
 
     const movements = await databases.listDocuments(
       APPWRITE_DATABASE_ID!,

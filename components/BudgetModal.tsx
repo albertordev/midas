@@ -9,10 +9,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { FiltersProps } from '@/types'
-import HistoryFiltersForm from '@/components/forms/HistoryFiltersForm'
+import { EntityFormProps } from '@/types'
+import BudgetsForm from '@/components/forms/BudgetsForm'
 
-const HistoryFiltersModal = ({ userId, open, setOpen }: FiltersProps) => {
+const MovementModal = ({ userId, type, open, setOpen }: EntityFormProps) => {
   const [modalOpen, setModalOpen] = useState(open)
 
   useEffect(() => {
@@ -27,17 +27,22 @@ const HistoryFiltersModal = ({ userId, open, setOpen }: FiltersProps) => {
     <Dialog open={modalOpen} onOpenChange={setModalOpen}>
       <DialogContent className="flex w-full flex-col rounded-md md:min-w-[750px]">
         <DialogHeader className="w-full text-gray-600">
-          <DialogTitle className="text-3xl">
-            Filtro de histórico de movimientos
-          </DialogTitle>
+          {type === 'create' && (
+            <DialogTitle className="text-3xl">Nuevo presupuesto</DialogTitle>
+          )}
+          {type === 'modify' && (
+            <DialogTitle className="text-3xl">
+              Modificación del presupuesto
+            </DialogTitle>
+          )}
           <DialogDescription>
-            Filtre la lista de movimientos para ver los que se han realizado
+            Introduzca los presupuestos por período y año
           </DialogDescription>
         </DialogHeader>
-        <HistoryFiltersForm userId={userId} setOpen={setOpen} />
+        <BudgetsForm userId={userId} setOpen={setOpen} type={type} />
       </DialogContent>
     </Dialog>
   )
 }
 
-export default HistoryFiltersModal
+export default MovementModal

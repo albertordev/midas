@@ -10,9 +10,9 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { FiltersProps } from '@/types'
-import HistoryFiltersForm from '@/components/forms/HistoryFiltersForm'
+import BalanceFiltersForm from '@/components/forms/BalanceFiltersForm'
 
-const HistoryFiltersModal = ({ userId, open, setOpen }: FiltersProps) => {
+const BalanceFiltersModal = ({ userId, open, setOpen }: FiltersProps) => {
   const [modalOpen, setModalOpen] = useState(open)
 
   useEffect(() => {
@@ -25,19 +25,19 @@ const HistoryFiltersModal = ({ userId, open, setOpen }: FiltersProps) => {
 
   return (
     <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-      <DialogContent className="flex w-full flex-col rounded-md md:min-w-[750px]">
+      <DialogContent className="flex w-full flex-col sm:rounded-md md:min-w-[750px]">
         <DialogHeader className="w-full text-gray-600">
           <DialogTitle className="text-3xl">
-            Filtro de histórico de movimientos
+            Filtro de consulta de saldos
           </DialogTitle>
           <DialogDescription>
-            Filtre la lista de movimientos para ver los que se han realizado
+            Filtre los saldos registrados en la aplicación
           </DialogDescription>
         </DialogHeader>
-        <HistoryFiltersForm userId={userId} setOpen={setOpen} />
+        <BalanceFiltersForm userId={userId} setOpen={setOpen} />
       </DialogContent>
     </Dialog>
   )
 }
 
-export default HistoryFiltersModal
+export default BalanceFiltersModal

@@ -22,7 +22,7 @@ labels[MovementColumns.ACCOUNT] = 'Cuenta'
 labels[MovementColumns.DESCRIPTION] = 'Descripción'
 labels[MovementColumns.DATE] = 'Fecha'
 labels[MovementColumns.TYPE] = 'Tipo'
-labels[MovementColumns.AMOUNT] = 'Cantidad'
+labels[MovementColumns.AMOUNT] = 'Importe'
 
 const columns = historyColumns({ labels })
 
@@ -45,13 +45,11 @@ const HistoryPage = () => {
   const state = useUserStore((state: any) => state)
   const { user } = state
   const [openFiltersDialog, setOpenFiltersDialog] = useState(false)
-  let response: AuthResponse | undefined
   const [data, setData] = useState<MovementModel[]>([])
   const historyRows = useHistoryStore((state: any) => state.historyRows)
 
   useEffect(() => {
     if (historyRows) setData(parseOutputData(historyRows))
-    // getMovementsList(user.$id)
   }, [historyRows])
 
   return (
@@ -63,8 +61,8 @@ const HistoryPage = () => {
         <Button
           className="flex items-center gap-2 bg-blue-500 hover:bg-blue-500/70"
           onClick={() => setOpenFiltersDialog(true)}>
-          <Filter h-6 w-6 />
-          Filtrar
+          <Filter className="h-5 w-5 md:h-6 md:w-6" />
+          <span className="hidden md:block">Filtrar</span>
         </Button>
       </header>
       <div className="mt-2 flex h-full w-full flex-col rounded-md bg-white p-4">

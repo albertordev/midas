@@ -25,7 +25,7 @@ const AccountModal = ({ type, userId, open, setOpen }: EntityFormProps) => {
 
   return (
     <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-      <DialogContent className="flex min-w-[750px] flex-col">
+      <DialogContent className="flex w-full flex-col rounded-md md:min-w-[750px]">
         <DialogHeader className="w-full text-gray-600">
           {type === 'create' && (
             <DialogTitle className="text-3xl">Nueva cuenta</DialogTitle>

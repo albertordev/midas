@@ -52,26 +52,28 @@ const DashboardCard = ({
           />
         </div>
       </div>
-      <div className="flex max-w-[30rem] items-center justify-center sm:hidden sm:max-w-80 md:flex">
-        <PieChart width={800} height={400}>
-          <Pie
-            data={data}
-            cx={120}
-            cy={200}
-            innerRadius={50}
-            outerRadius={80}
-            fill="#8884d8"
-            paddingAngle={5}
-            dataKey="value">
-            {data.map((entry: any, index: number) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={backgrounds[index % backgrounds.length]}
-              />
-            ))}
-          </Pie>
-        </PieChart>
-      </div>
+      {data && data.length > 0 && (
+        <div className="flex max-w-[30rem] items-center justify-center sm:hidden sm:max-w-80 md:flex">
+          <PieChart width={800} height={400}>
+            <Pie
+              data={data}
+              cx={120}
+              cy={200}
+              innerRadius={50}
+              outerRadius={80}
+              fill="#8884d8"
+              paddingAngle={5}
+              dataKey="value">
+              {data.map((entry: any, index: number) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={backgrounds[index % backgrounds.length]}
+                />
+              ))}
+            </Pie>
+          </PieChart>
+        </div>
+      )}
     </div>
   )
 }

@@ -47,7 +47,7 @@ const TopMovements = ({ type, header, accounts }: TopMovementsProps) => {
                 'text-sm font-semibold',
                 type === 'income' ? 'text-green-700' : 'text-red-700'
               )}>
-              {formatAmount(account.amount, locale)}
+              {formatAmount(account.value, locale)}
             </span>
           </li>
         ))}

@@ -3,70 +3,67 @@
 import MovementsForm from '@/components/forms/MovementsForm'
 import { toast } from '@/hooks/use-toast'
 import { getAccounts } from '@/lib/actions/accounts.actions'
-import MovementModal from '@/components/MovementModal'
+import BudgetModal from '@/components/BudgetModal'
 import { useUserStore } from '@/store/auth-store'
-import { Account, AuthResponse, HistoryFiltersParams, Movement } from '@/types'
+import { Account, AuthResponse, Movement } from '@/types'
 import { useEffect, useState } from 'react'
 import { CirclePlus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import DataTable from '@/components/DataTable'
-import { MovementColumns, RowActions } from '@/constants'
-import { movementColumns } from '@/lib/columns'
-import { getMovements } from '@/lib/actions/movements.actions'
-import { MovementModel } from '@/types/appwrite.types'
-import { useMovementActionStore } from '@/store/movement-action-store'
+import { BudgetColumns, RowActions } from '@/constants'
+import { budgetColumns } from '@/lib/columns'
+import { getBudgets } from '@/lib/actions/budget.actions'
+import { BudgetModel } from '@/types/appwrite.types'
+import { useBudgetActionStore } from '@/store/budget-action-store'
 import { redirect } from 'next/navigation'
-import { getMovementsHistory } from '@/lib/actions/movements.actions'
+import { getPeriodName } from '@/lib/utils'
 
 /** Array de etiquetas para las columnas con el texto traducido
  * Si alguna vez se traducen las columnas, reaprovechamos el array
  */
 const labels: string[] = []
-labels[MovementColumns.ACCOUNT] = 'Cuenta'
-labels[MovementColumns.DESCRIPTION] = 'Descripción'
-labels[MovementColumns.DATE] = 'Fecha'
-labels[MovementColumns.TYPE] = 'Tipo'
-labels[MovementColumns.AMOUNT] = 'Importe'
+labels[BudgetColumns.ACCOUNT] = 'Cuenta'
+labels[BudgetColumns.NAME] = 'Nombre'
+labels[BudgetColumns.TYPE] = 'Tipo'
+labels[BudgetColumns.PERIOD] = 'Mes'
+labels[BudgetColumns.YEAR] = 'Año'
+labels[BudgetColumns.AMOUNT] = 'Saldo'
 
 const actions: string[] = []
 actions[RowActions.HEADER] = 'Acciones'
 actions[RowActions.DELETE] = 'Borrar'
 actions[RowActions.EDIT] = 'Modificar'
 
-const columns = movementColumns({ labels, actions })
+const columns = budgetColumns({ labels })
 
 /** Utilidades usadas por el componente */
-const parseOutputData = (data: MovementModel[]): MovementModel[] => {
-  return data?.map((movement: MovementModel) => {
+const parseOutputData = (data: BudgetModel[]): BudgetModel[] => {
+  return data?.map((budget: BudgetModel) => {
     return {
-      ...movement,
-      type: movement.type === 'income' ? 'Ingresos' : 'Gastos',
-      parsedDate: new Date(movement.date).toLocaleDateString('es-ES', {
-        day: 'numeric',
-        month: 'numeric',
-        year: 'numeric',
-      }),
+      ...budget,
+      type: budget.type === 'income' ? 'Ingresos' : 'Gastos',
+      periodName: getPeriodName(budget.period),
     }
   })
 }
 
-const MovementsPage = () => {
+const BudgetPage = () => {
   const state = useUserStore((state: any) => state)
   const { user } = state
   let response: AuthResponse | undefined
-  const [data, setData] = useState<MovementModel[]>([])
-  const [openMovementDialog, setOpenMovementDialog] = useState(false)
-  const rowDeleted = useMovementActionStore((state: any) => state.rowDeleted)
-  const rowUpdated = useMovementActionStore((state: any) => state.rowUpdated)
-  const setRowUpdated = useMovementActionStore(
+  const [data, setData] = useState<BudgetModel[]>([])
+  const [openBudgetDialog, setOpenBudgetDialog] = useState(false)
+  const rowDeleted = useBudgetActionStore((state: any) => state.rowDeleted)
+  const rowUpdated = useBudgetActionStore((state: any) => state.rowUpdated)
+  const setRowUpdated = useBudgetActionStore(
     (state: any) => state.setRowUpdated
   )
-  const setRowDeleted = useMovementActionStore(
+  const setRowDeleted = useBudgetActionStore(
     (state: any) => state.setRowDeleted
   )
 
   useEffect(() => {
-    getMovementsList(user.$id)
+    getBudgetsList(user.$id)
   }, [])
 
   useEffect(() => {
@@ -75,22 +72,18 @@ const MovementsPage = () => {
     }
 
     if (rowUpdated || rowDeleted) {
-      getMovementsList(user.$id)
+      getBudgetsList(user.$id)
     }
   }, [user.$id, rowUpdated, rowDeleted])
 
-  const getMovementsList = async (userId: string) => {
-    const historyFilters: HistoryFiltersParams = {
-      userId,
-      limit: 10,
-    }
-    response = await getMovementsHistory(historyFilters)
+  const getBudgetsList = async (userId: string) => {
+    response = await getBudgets(userId)
 
     if (!response) {
       toast({
         variant: 'destructive',
         description:
-          'Ha ocurrido un error al recuperar la lista de movimientos',
+          'Ha ocurrido un error al recuperar la lista de presupuestos',
       })
       return
     }
@@ -114,29 +107,29 @@ const MovementsPage = () => {
   return (
     <div className="flex h-full w-full flex-col bg-gray-300/70 p-4">
       <header className="mt-2 flex h-16 w-full items-center justify-between rounded-md bg-white p-4">
-        <span className="text-xl font-bold text-gray-600 sm:text-2xl">
-          Lista de movimientos
+        <span className="text-2xl font-bold text-gray-600">
+          Lista de presupuestos
         </span>
         <Button
           className="flex items-center gap-2 bg-blue-500 hover:bg-blue-500/70"
-          onClick={() => setOpenMovementDialog(true)}>
+          onClick={() => setOpenBudgetDialog(true)}>
           <CirclePlus className="h-5 w-5 md:h-6 md:w-6" />
-          <span className="hidden md:block">Añadir movimiento</span>
+          <span className="hidden md:block">Añadir presupuesto</span>
         </Button>
       </header>
       <div className="mt-2 flex h-full w-full rounded-md bg-white p-4">
         <DataTable columns={columns} data={data} hiddenColumnsLabels={labels} />
       </div>
       <div className="w-min-[600px]">
-        <MovementModal
+        <BudgetModal
           type="create"
           userId={user.$id}
-          open={openMovementDialog}
-          setOpen={setOpenMovementDialog}
+          open={openBudgetDialog}
+          setOpen={setOpenBudgetDialog}
         />
       </div>
     </div>
   )
 }
 
-export default MovementsPage
+export default BudgetPage

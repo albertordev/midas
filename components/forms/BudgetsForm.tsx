@@ -8,21 +8,21 @@ import CustomFormField from '@/components/CustomFormField'
 import { FormFieldType } from '@/constants'
 import { Form } from '../ui/form'
 import { SelectItem } from '@/components/ui/select'
-import { Movement, EntityFormProps, AuthResponse } from '@/types'
-import { createMovement, modifyMovement } from '@/lib/actions/movements.actions'
+import { EntityFormProps, AuthResponse, Budget } from '@/types'
+import { createBudget, modifyBudget } from '@/lib/actions/budget.actions'
 import { useEffect, useState } from 'react'
 import { getAccounts } from '@/lib/actions/accounts.actions'
 import { toast } from '@/hooks/use-toast'
 import { AccountModel } from '@/types/appwrite.types'
-import { useMovementActionStore } from '@/store/movement-action-store'
+import { useBudgetActionStore } from '@/store/budget-action-store'
+import { buildPeriodsList, buildYearsList, getPeriodValue } from '@/lib/utils'
 
 const formSchema = z.object({
   account: z.string().min(1, 'Seleccione una cuenta'),
-  description: z
-    .string()
-    .min(1, 'Introduzca una descripción corta para el movimiento')
-    .max(100, 'La descripción no puede contener más 100 caracteres'),
-  date: z.date(),
+  period: z.string().min(1, 'Seleccione un período'),
+  year: z.coerce.number({
+    required_error: 'Seleccione un año',
+  }),
   amount: z.coerce.number({
     required_error: 'El importe es obligatorio',
   }),
@@ -37,12 +37,12 @@ const parseOutputData = (data: AccountModel[]): AccountModel[] => {
   })
 }
 
-const MovementsForm = ({ type, userId, setOpen }: EntityFormProps) => {
-  const setRowUpdated = useMovementActionStore(
+const BudgetsForm = ({ type, userId, setOpen }: EntityFormProps) => {
+  const setRowUpdated = useBudgetActionStore(
     (state: any) => state.setRowUpdated
   )
-  const currentMovement = useMovementActionStore(
-    (state: any) => state.currentMovement
+  const currentBudget = useBudgetActionStore(
+    (state: any) => state.currentBudget
   )
 
   let accountsResponse: AuthResponse | undefined
@@ -52,12 +52,14 @@ const MovementsForm = ({ type, userId, setOpen }: EntityFormProps) => {
   const [isLoadingAccounts, setIsLoadingAccounts] = useState(false)
   const [isSaveAndNew, setIsSaveAndNew] = useState<boolean | null>(null)
   const [accounts, setAccounts] = useState<AccountModel[]>([])
+  const [years, setYears] = useState<number[]>(buildYearsList())
+  const [periods, setPeriods] = useState<any[]>(buildPeriodsList('es'))
 
   const defaultValues = {
-    account: type === 'modify' ? currentMovement?.account : null,
-    description: type === 'modify' ? currentMovement?.description : '',
-    date: type === 'modify' ? new Date(currentMovement?.date) : undefined,
-    amount: type === 'modify' ? currentMovement?.amount : 0,
+    account: type === 'modify' ? currentBudget?.account : null,
+    period: type === 'modify' ? currentBudget?.period : 0,
+    year: type === 'modify' ? currentBudget?.year : 0,
+    amount: type === 'modify' ? currentBudget?.amount : 0,
   }
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -119,22 +121,23 @@ const MovementsForm = ({ type, userId, setOpen }: EntityFormProps) => {
 
     if (type === 'create') {
       try {
-        const movement: Movement = {
+        const budget: Budget = {
           id: '',
           type: currentAccount?.type ?? '' /** Siempre tendrá un valor */,
-          accountName: currentAccount?.description,
           userId: userId,
           account: values.account,
-          description: values.description,
-          date: values.date,
+          accountName: currentAccount?.description,
+          period: values.period ? getPeriodValue(values.period) : undefined,
+          year: values.year,
           amount: values.amount,
         }
-        const response: AuthResponse | undefined =
-          await createMovement(movement)
+
+        const response: AuthResponse | undefined = await createBudget(budget)
         if (!response || !response?.data) {
           toast({
             variant: 'destructive',
-            description: 'Ha ocurrido un error al crear el movimiento',
+            description:
+              'Ha ocurrido un error al crear el registro de presupuesto',
           })
           return
         }
@@ -150,40 +153,40 @@ const MovementsForm = ({ type, userId, setOpen }: EntityFormProps) => {
         !isSaveAndNew && setOpen && setOpen(false)
         isSaveAndNew && clear()
 
-        /** Notificamos el cambio para actualizar la lista de movimientos */
+        /** Notificamos el cambio para actualizar la lista de presupuestos */
         setRowUpdated(true)
       } catch (error) {
         toast({
           variant: 'destructive',
           description:
-            'Ha ocurrido un error al crear el registro del movimiento',
+            'Ha ocurrido un error al crear el registro de presupuesto',
         })
       }
     } else {
       try {
-        const movement: Movement = {
-          id: currentMovement.$id,
-          type: currentMovement.type,
-          accountName: currentAccount?.description,
+        const budget: Budget = {
+          id: currentBudget.$id,
+          type: currentBudget.type,
           userId: userId,
           account: values.account,
-          description: values.description,
-          date: values.date,
+          accountName: currentAccount?.description,
+          period: values.period ? getPeriodValue(values.period) : undefined,
+          year: values.year,
           amount: values.amount,
         }
 
-        await modifyMovement(movement)
+        await modifyBudget(budget)
 
         !isSaveAndNew && setOpen && setOpen(false)
         isSaveAndNew && clear()
 
-        /** Notificamos el cambio para actualizar la lista de movimientos */
+        /** Notificamos el cambio para actualizar la lista de presupuestos */
         setRowUpdated(true)
       } catch (error) {
         toast({
           variant: 'destructive',
           description:
-            'Ha ocurrido un error al guardar el registro del movimiento',
+            'Ha ocurrido un error al guardar el registro del presupuesto',
         })
       }
     }
@@ -227,21 +230,31 @@ const MovementsForm = ({ type, userId, setOpen }: EntityFormProps) => {
             ))}
           </CustomFormField>
         )}
-        <CustomFormField
-          fieldType={FormFieldType.INPUT}
-          control={form.control}
-          name="description"
-          label="Descripción"
-          placeholder="Introduzca la descripción"
-        />
-        <div className="max-w-[200px]">
+        <div className="flex gap-4">
           <CustomFormField
-            fieldType={FormFieldType.DATE_PICKER}
+            fieldType={FormFieldType.SELECT}
             control={form.control}
-            name="date"
-            label="Fecha"
-            dateFormat="dd/MM/yyyy"
-          />
+            name="year"
+            label="Año"
+            placeholder="Seleccione un año">
+            {years.map((year: number) => (
+              <SelectItem key={year} value={year.toString()}>
+                {year}
+              </SelectItem>
+            ))}
+          </CustomFormField>
+          <CustomFormField
+            fieldType={FormFieldType.SELECT}
+            control={form.control}
+            name="period"
+            label="Mes"
+            placeholder="Seleccione un mes">
+            {periods.map((period: any) => (
+              <SelectItem key={period.value} value={period.name}>
+                {period.name}
+              </SelectItem>
+            ))}
+          </CustomFormField>
         </div>
         <div className="max-w-[200px]">
           <CustomFormField
@@ -255,7 +268,7 @@ const MovementsForm = ({ type, userId, setOpen }: EntityFormProps) => {
         </div>
         <div className="flex items-center justify-between gap-2">
           <Button
-            className="sm:text-md mt-4 max-w-[200px] border-gray-700 text-xs focus-visible:ring-0"
+            className="mt-4 max-w-[200px] border-gray-700 focus-visible:ring-0"
             variant="outline"
             type="button"
             onClick={clear}>
@@ -271,13 +284,13 @@ const MovementsForm = ({ type, userId, setOpen }: EntityFormProps) => {
               Cancelar
             </Button>
             <Button
-              className="sm:text-md text-xs mt-4 max-w-[200px] bg-green-600 hover:bg-green-600/70"
+              className="mt-4 max-w-[200px] bg-green-600 hover:bg-green-600/70"
               type="submit"
               onClick={() => setIsSaveAndNew(false)}>
               Guardar
             </Button>
             <Button
-              className="sm:text-md mt-4 max-w-[200px] bg-blue-500 text-xs hover:bg-blue-500/70"
+              className="mt-4 max-w-[200px] bg-blue-500 hover:bg-blue-500/70"
               type="submit"
               onClick={() => setIsSaveAndNew(true)}>
               Guardar y nuevo
@@ -289,4 +302,4 @@ const MovementsForm = ({ type, userId, setOpen }: EntityFormProps) => {
   )
 }
 
-export default MovementsForm
+export default BudgetsForm

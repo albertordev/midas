@@ -13,8 +13,9 @@ import { getAccounts } from '@/lib/actions/accounts.actions'
 import { toast } from '@/hooks/use-toast'
 import { AuthResponse, FiltersProps } from '@/types'
 import { AccountModel } from '@/types/appwrite.types'
-import { getMovementsHistory } from '@/lib/actions/movements.actions'
-import { useHistoryStore } from '@/store/movement-action-store'
+import { getBalances } from '@/lib/actions/balance.actions'
+import { useBalanceStore } from '@/store/balance-action-store'
+import { buildPeriodsList, buildYearsList, getPeriodValue } from '@/lib/utils'
 
 const parseOutputData = (data: AccountModel[]): AccountModel[] => {
   return data?.map((account: AccountModel) => {
@@ -28,34 +29,31 @@ const parseOutputData = (data: AccountModel[]): AccountModel[] => {
 const formSchema = z.object({
   account: z.string().optional(),
   type: z.string().optional(),
-  description: z.string().optional(),
-  dateFrom: z.date().optional(),
-  dateTo: z.date().optional(),
-  amountFrom: z.coerce.number().optional(),
-  amountTo: z.coerce.number().optional(),
+  period: z.string().optional(),
+  year: z.coerce.number().optional(),
 })
 
-const HistoryFiltersForm = ({ userId, setOpen }: FiltersProps) => {
+const BalanceFiltersForm = ({ userId, setOpen }: FiltersProps) => {
   const [isLoadingAccounts, setIsLoadingAccounts] = useState(false)
   let accountsResponse: AuthResponse | undefined
   const [accounts, setAccounts] = useState<AccountModel[]>([])
-  const setHistoryList = useHistoryStore((state: any) => state.setHistoryList)
+  const setBalanceRows = useBalanceStore((state: any) => state.setBalanceRows)
+  const [years, setYears] = useState<number[]>(buildYearsList())
+  const [periods, setPeriods] = useState<any[]>(buildPeriodsList('es'))
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       account: '',
       type: '',
-      description: '',
-      dateFrom: undefined,
-      dateTo: undefined,
-      amountFrom: 0,
-      amountTo: 0,
+      period: '',
+      year: 0,
     },
   })
   const { reset } = form
 
   useEffect(() => {
+    setYears(buildYearsList())
     getAccountsList(userId)
   }, [])
 
@@ -89,11 +87,8 @@ const HistoryFiltersForm = ({ userId, setOpen }: FiltersProps) => {
       userId,
       account: values.account,
       type: values.type,
-      description: values.description,
-      dateFrom: values.dateFrom ? new Date(values.dateFrom?.toString()) : null,
-      dateTo: values.dateTo ? new Date(values.dateTo?.toString()) : null,
-      amountFrom: values.amountFrom,
-      amountTo: values.amountTo,
+      period: values.period ? getPeriodValue(values.period) : undefined,
+      year: values.year,
     }
 
     /** Comprobamos que la selección es coherente  */
@@ -110,35 +105,13 @@ const HistoryFiltersForm = ({ userId, setOpen }: FiltersProps) => {
       }
     }
 
-    if (filterValues.amountFrom && filterValues.amountTo) {
-      if (filterValues.amountFrom > filterValues.amountTo) {
-        toast({
-          variant: 'destructive',
-          description: 'El importe de inicio debe ser menor al importe fin',
-        })
-        return
-      }
-    }
-
-    /** Comprobamos que la fecha de inicio es anterior a la de fin */
-    if (filterValues.dateFrom && filterValues.dateTo) {
-      if (filterValues.dateFrom > filterValues.dateTo) {
-        toast({
-          variant: 'destructive',
-          description: 'La fecha de inicio debe ser anterior a la fecha fin',
-        })
-        return
-      }
-    }
-
     try {
-      const response = await getMovementsHistory(filterValues)
+      const response = await getBalances(filterValues)
 
       if (!response) {
         toast({
           variant: 'destructive',
-          description:
-            'Ha ocurrido un error al obtener el histórico de movimientos',
+          description: 'Ha ocurrido un error al obtener los saldos',
         })
         setOpen(false)
         return
@@ -153,13 +126,13 @@ const HistoryFiltersForm = ({ userId, setOpen }: FiltersProps) => {
         return
       }
 
-      setHistoryList(response?.data)
+      setBalanceRows(response?.data)
       setOpen(false)
     } catch (error) {
+      console.log(error)
       toast({
         variant: 'destructive',
-        description:
-          'Ha ocurrido un error al obtener el histórico de movimientos',
+        description: 'Ha ocurrido un error al obtener los saldos',
       })
     }
   }
@@ -215,46 +188,29 @@ const HistoryFiltersForm = ({ userId, setOpen }: FiltersProps) => {
           </div>
           <div className="flex flex-col gap-4 sm:flex-row">
             <CustomFormField
-              fieldType={FormFieldType.DATE_PICKER}
+              fieldType={FormFieldType.SELECT}
               control={form.control}
-              name="dateFrom"
-              label="Fecha desde"
-              dateFormat="dd/MM/yyyy"
-            />
+              name="year"
+              label="Año"
+              placeholder="Seleccione un año">
+              {years.map((year: number) => (
+                <SelectItem key={year} value={year.toString()}>
+                  {year}
+                </SelectItem>
+              ))}
+            </CustomFormField>
             <CustomFormField
-              fieldType={FormFieldType.DATE_PICKER}
+              fieldType={FormFieldType.SELECT}
               control={form.control}
-              name="dateTo"
-              label="Hasta"
-              dateFormat="dd/MM/yyyy"
-            />
-          </div>
-          <div className="flex flex-col gap-4 sm:flex-row">
-            <CustomFormField
-              fieldType={FormFieldType.INPUT}
-              control={form.control}
-              name="description"
-              label="Descripción"
-              placeholder="Introduzca una descripción"
-            />
-          </div>
-          <div className="flex gap-4">
-            <CustomFormField
-              fieldType={FormFieldType.INPUT}
-              control={form.control}
-              type="number"
-              name="amountFrom"
-              label="Importe desde"
-              placeholder="Introduzca un importe"
-            />
-            <CustomFormField
-              fieldType={FormFieldType.INPUT}
-              control={form.control}
-              type="number"
-              name="amountTo"
-              label="Hasta"
-              placeholder="Introduzca una importe"
-            />
+              name="period"
+              label="Mes"
+              placeholder="Seleccione un mes">
+              {periods.map((period: any) => (
+                <SelectItem key={period.value} value={period.name}>
+                  {period.name}
+                </SelectItem>
+              ))}
+            </CustomFormField>
           </div>
           <div className="flex items-center justify-between gap-2">
             <Button
@@ -286,4 +242,4 @@ const HistoryFiltersForm = ({ userId, setOpen }: FiltersProps) => {
   )
 }
 
-export default HistoryFiltersForm
+export default BalanceFiltersForm
