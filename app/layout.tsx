@@ -16,6 +16,15 @@ const fontSans = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: 'Midas',
   description: 'Midas',
+  manifest: '/manifest.json',
+  themeColor: '#8936FF',
+  icons: {
+    icon: '/icons/logo.svg',
+    shortcut: '/icons/logo.svg',
+    apple: '/icons/logo.svg',
+  },
+  viewport:
+    'minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, viewport-fit=cover',
 }
 
 export default async function RootLayout({

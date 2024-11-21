@@ -1,5 +1,6 @@
 'use client'
 
+import type { Metadata } from 'next'
 import { useUserStore } from '@/store/auth-store'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
