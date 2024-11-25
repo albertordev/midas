@@ -401,8 +401,10 @@ export const getMovementsHistory = async (
     dateTo,
     amountFrom,
     amountTo,
-    limit,
+    limit = 5000,
   } = historyFilters
+
+  console.log(dateFrom, dateTo)
 
   try {
     const query: any = [Query.equal('userId', [userId])]

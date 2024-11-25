@@ -34,7 +34,7 @@ const DashboardCard = ({
   if (!isClient) return null
 
   return (
-    <div className="flex h-40 w-full rounded-md bg-white p-4 sm:max-w-48 sm:justify-between md:max-w-60">
+    <div className="flex h-40 w-full rounded-md bg-white p-4 sm:max-w-48 sm:justify-between md:min-w-60">
       <div className="flex flex-col items-start justify-center">
         <div className={`flex max-w-20 rounded-full bg-${color}/20 p-2`}>
           <Image src={icon} alt={title} width={24} height={24} />

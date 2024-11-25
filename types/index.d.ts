@@ -51,6 +51,7 @@ export type AuthResponse = {
 export type User = {
   id: string
   name: string
+  avatarColor?: string
 }
 
 export type Account = {

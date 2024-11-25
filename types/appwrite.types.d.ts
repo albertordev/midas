@@ -18,6 +18,7 @@ export interface AccountModel extends Models.Document {
 
 export interface UserModel extends Models.Document {
   name: string
+  avatarColor?: string
 }
 
 export interface MovementModel extends Models.Document {

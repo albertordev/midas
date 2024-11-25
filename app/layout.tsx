@@ -23,8 +23,8 @@ export const metadata: Metadata = {
     shortcut: '/icons/logo.svg',
     apple: '/icons/logo.svg',
   },
-  viewport:
-    'minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, viewport-fit=cover',
+  // viewport:
+  //   'minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, viewport-fit=cover',
 }
 
 export default async function RootLayout({

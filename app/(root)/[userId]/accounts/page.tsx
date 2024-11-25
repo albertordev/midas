@@ -50,6 +50,7 @@ const AccountsPage = () => {
   const [data, setData] = useState<AccountModel[]>([])
   const rowDeleted = useAccountActionStore((state: any) => state.rowDeleted)
   const rowUpdated = useAccountActionStore((state: any) => state.rowUpdated)
+  let currentCursor: string
   const setRowUpdated = useAccountActionStore(
     (state: any) => state.setRowUpdated
   )
@@ -77,6 +78,8 @@ const AccountsPage = () => {
   const getAccountsList = async (userId: string) => {
     response = await getAccounts(userId)
 
+    console.log(response)
+
     if (!response) {
       toast({
         variant: 'destructive',
@@ -92,6 +95,9 @@ const AccountsPage = () => {
       })
       return
     }
+
+    console.log(response?.data)
+
     setData(parseOutputData(response?.data))
     if (rowUpdated) {
       setRowUpdated(false)

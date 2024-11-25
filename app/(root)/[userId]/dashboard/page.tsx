@@ -58,11 +58,13 @@ const DashboardPage = () => {
         }
         incomeResponse = await getBalances(incomeFilters)
 
-        if (!incomeResponse || !incomeResponse.data) {
+        console.log(incomeResponse)
+
+        if (!incomeResponse) {
           toast({
             variant: 'destructive',
             description:
-              'Ha ocurrido un error al recuperar los datos de los indicadores',
+              'Ha ocurrido un error al recuperar los datos de los indicadores 1',
           })
           return
         }
@@ -85,11 +87,11 @@ const DashboardPage = () => {
 
         expensesResponse = await getBalances(expensesFilters)
 
-        if (!expensesResponse || !expensesResponse.data) {
+        if (!expensesResponse) {
           toast({
             variant: 'destructive',
             description:
-              'Ha ocurrido un error al recuperar los datos de los indicadores',
+              'Ha ocurrido un error al recuperar los datos de los indicadores 2',
           })
           return
         }
@@ -109,11 +111,11 @@ const DashboardPage = () => {
         }
         budgetResponse = await getFilteredBudget(budgetFilters)
 
-        if (!budgetResponse || !budgetResponse.data) {
+        if (!budgetResponse) {
           toast({
             variant: 'destructive',
             description:
-              'Ha ocurrido un error al recuperar los datos de los indicadores',
+              'Ha ocurrido un error al recuperar los datos de los indicadores 3',
           })
           return
         }
@@ -126,31 +128,31 @@ const DashboardPage = () => {
           return
         }
 
-        const incomeData = buildIncomeData()
-        const expensesData = buildExpensesData()
+        if (incomeResponse?.data) {
+          const incomeData = buildIncomeData()
+          getIncomeAccounts(incomeData)
+        }
+
+        if (incomeResponse?.data) {
+          const expensesData = buildExpensesData()
+          getExpensesAccounts(expensesData)
+        }
 
         /** Para el gráfico comparativo entre saldo y presupuestos */
-        buildBalancesData()
-        buildBudgetData()
-
-        /** El array que enviamos para que se muestren las cuentas
-         *  solo contendrá las tres cuentas con mayor cantidad de ingresos
-         */
-        // setIncomeData(incomeData.slice(0, 3))
-        // setExpensesData(expensesData.slice(0, 3))
-
-        /** Obtenemos las cuentas de ingresos y gastos con sus importes acumulados
-         *  Irán a los doughnuts de los indicadores y a los top de ingresos y gastos.
-         *  Sólo contendrán las tres cuentas con mayor cantidad de ingresos
-         */
-
-        getIncomeAccounts(incomeData)
-        getExpensesAccounts(expensesData)
+        if (
+          incomeResponse?.data &&
+          expensesResponse?.data &&
+          budgetResponse?.data
+        ) {
+          buildBalancesData()
+          buildBudgetData()
+        }
       } catch (error) {
+        console.log(error)
         toast({
           variant: 'destructive',
           description:
-            'Ha ocurrido un error al recuperar los datos de los indicadores',
+            'Ha ocurrido un error al recuperar los datos de los indicadores 4',
         })
       }
     }

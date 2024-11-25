@@ -80,9 +80,17 @@ const MovementsPage = () => {
   }, [user.$id, rowUpdated, rowDeleted])
 
   const getMovementsList = async (userId: string) => {
+    const today = new Date()
+    const dateFrom = new Date(today.getFullYear(), 1, 1)
+    const dateTo = today
+
+    console.log(dateFrom, dateTo)
+
     const historyFilters: HistoryFiltersParams = {
       userId,
-      limit: 10,
+      dateFrom,
+      dateTo,
+      limit: 500,
     }
     response = await getMovementsHistory(historyFilters)
 

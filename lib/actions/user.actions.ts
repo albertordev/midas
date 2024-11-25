@@ -6,7 +6,7 @@ import { AuthResponse, User } from '@/types'
 import { UserModel } from '@/types/appwrite.types'
 import { Query } from 'node-appwrite'
 import { ID } from 'node-appwrite'
-import { parseStringify } from '../utils'
+import { parseStringify, getAvatarColor } from '../utils'
 
 const {
   APPWRITE_PROJECT_ID,
@@ -64,7 +64,10 @@ export const loginUser = async (username: string, password: string) => {
     const alreadyExistingUser = await getUserByName(user.name)
 
     if (!alreadyExistingUser) {
+      /** Buscamos un color al azar para su avatar */
+      loggedUser.avatarColor = getAvatarColor()
       const newUser: UserModel = await createUser(loggedUser)
+
       return {
         data: newUser,
         status: 200,
@@ -78,7 +81,6 @@ export const loginUser = async (username: string, password: string) => {
   } catch (error: sdk.AppwriteException | any) {
     if (error) {
       const errorCode = error?.code
-
       return {
         data: null,
         status: errorCode,
@@ -94,7 +96,7 @@ export const createUser = async (user: User) => {
       APPWRITE_DATABASE_ID!,
       APPWRITE_USERS_COLLECTION_ID!,
       ID.unique(),
-      { name: user.name }
+      { id: user.id, name: user.name, avatarColor: user.avatarColor }
     )
 
     return parseStringify(newUser)

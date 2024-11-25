@@ -17,7 +17,7 @@ import { toast } from '@/hooks/use-toast'
 const formSchema = z.object({
   account: z
     .string()
-    .min(5, 'El código de cuenta debe tener al menos 5 caracteres')
+    .min(3, 'El código de cuenta debe tener al menos 3 caracteres')
     .max(20, 'El código de cuenta no puede sobrepasar los 20 caracteres'),
   description: z
     .string()
@@ -134,6 +134,15 @@ const AccountsForm = ({ type, userId, setOpen }: EntityFormProps) => {
   }
 
   const clear = () => {
+    // if(currentAccount){
+    form.reset({
+      account: '',
+      description: '',
+      icon: '',
+      type: '',
+      comments: '',
+    })
+    // }
     reset()
   }
 

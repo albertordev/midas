@@ -66,6 +66,7 @@ const MovementsForm = ({ type, userId, setOpen }: EntityFormProps) => {
   const { reset } = form
 
   useEffect(() => {
+    console.log(currentMovement?.date)
     getAccountsList(userId)
   }, [])
 
@@ -160,6 +161,7 @@ const MovementsForm = ({ type, userId, setOpen }: EntityFormProps) => {
         })
       }
     } else {
+      console.log(values.date)
       try {
         const movement: Movement = {
           id: currentMovement.$id,
@@ -222,7 +224,7 @@ const MovementsForm = ({ type, userId, setOpen }: EntityFormProps) => {
             onSelectValueChanged={(value: any) => handleSelect(value)}>
             {accounts.map((account: AccountModel) => (
               <SelectItem key={account.code} value={account.code}>
-                {`${account.description} (${account.parsedType})`}
+                {`${account.description} (${account.code} - ${account.parsedType})`}
               </SelectItem>
             ))}
           </CustomFormField>
@@ -271,7 +273,7 @@ const MovementsForm = ({ type, userId, setOpen }: EntityFormProps) => {
               Cancelar
             </Button>
             <Button
-              className="sm:text-md text-xs mt-4 max-w-[200px] bg-green-600 hover:bg-green-600/70"
+              className="sm:text-md mt-4 max-w-[200px] bg-green-600 text-xs hover:bg-green-600/70"
               type="submit"
               onClick={() => setIsSaveAndNew(false)}>
               Guardar

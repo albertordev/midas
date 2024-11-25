@@ -7,18 +7,25 @@ import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { LogOutIcon } from 'lucide-react'
 import { useUserStore } from '@/store/auth-store'
-import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 const Menubar = () => {
   const pathname = usePathname()
   const resetUser = useUserStore((state: any) => state.resetUser)
-  const router = useRouter()
   const user = useUserStore((state: any) => state.user)
+  const [avatarBackground, setAvatarBackground] = useState('bg-gray-500')
+  const [avatarLetter, setAvatarLetter] = useState('X')
   let path: string = ''
 
   if (!user || !user.$id) {
     redirect(`/`)
   }
+
+  useEffect(() => {
+    const avatarLetter = user.name.charAt(0).toUpperCase()
+    setAvatarLetter(avatarLetter)
+    setAvatarBackground(user.avatarColor)
+  }, [])
 
   path = `${user.$id}`
 
@@ -54,6 +61,8 @@ const Menubar = () => {
       route: `/${path}/budget`,
     },
   ]
+
+  console.log(avatarBackground)
 
   const LogOut = () => {
     resetUser()
@@ -93,7 +102,11 @@ const Menubar = () => {
       </nav>
       <footer className="flex flex-col items-center justify-center gap-2 p-4 md:justify-between lg:flex-row">
         <div className="flex items-center justify-center gap-2 text-start text-xs text-gray-500">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-500 text-white">
+          <div
+            className={cn(
+              'flex h-8 w-8 items-center justify-center rounded-full text-white',
+              avatarBackground ?? 'bg-gray-500'
+            )}>
             A
           </div>
           <span className="hidden text-[16px] font-semibold lg:block">

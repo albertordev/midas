@@ -19,7 +19,7 @@ const parseError = (errorCode: number | undefined): void => {
   if (!errorCode) {
     toast({
       variant: 'destructive',
-      description: 'Ha ocurrido un error al iniciar sesión',
+      description: 'Ha ocurrido un error al iniciar sesión 1',
     })
 
     return
@@ -41,13 +41,13 @@ const parseError = (errorCode: number | undefined): void => {
     case 500:
       toast({
         variant: 'destructive',
-        description: 'Ha ocurrido un error al iniciar sesión',
+        description: 'Ha ocurrido un error al iniciar sesión 2',
       })
       break
     default:
       toast({
         variant: 'destructive',
-        description: 'Ha ocurrido un error al iniciar sesión',
+        description: 'Ha ocurrido un error al iniciar sesión 3',
       })
       break
   }
@@ -56,7 +56,6 @@ const parseError = (errorCode: number | undefined): void => {
 const LoginForm = () => {
   const router = useRouter()
   const params = useParams()
-  const { locale } = params
   const [isLoading, setIsLoading] = useState(false)
   const saveUser = useUserStore((state: any) => state.saveUser)
 
@@ -87,6 +86,8 @@ const LoginForm = () => {
         values.password
       )
 
+      console.log(response)
+
       if (response?.status !== 200) {
         parseError(response?.status)
         return
@@ -94,11 +95,14 @@ const LoginForm = () => {
 
       const loggedUser = response?.data
 
-      if (loggedUser && response?.status === 200) {
-        router.push(`/${locale}/${loggedUser?.$id}/dashboard`)
+      console.log('loggedUser', loggedUser)
+
+      if (loggedUser && response?.status === 200 && loggedUser?.$id) {
+        router.push(`/${loggedUser?.$id}/dashboard`)
+        saveUser({ user: loggedUser })
       }
-      saveUser({ user: loggedUser })
     } catch (error: AuthResponse | any) {
+      console.log(error)
       error && parseError(error.status)
     } finally {
       setIsLoading(false)

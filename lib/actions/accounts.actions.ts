@@ -31,7 +31,7 @@ export const getAccounts = async (userId: string) => {
     const accounts = await databases.listDocuments(
       APPWRITE_DATABASE_ID!,
       APPWRITE_ACCOUNTS_COLLECTION_ID!,
-      [Query.equal('userId', [userId])]
+      [Query.equal('userId', [userId]), Query.limit(5000)]
     )
     if (accounts.documents.length === 0) {
       return {
@@ -49,6 +49,7 @@ export const getAccounts = async (userId: string) => {
   } catch (error: sdk.AppwriteException | any) {
     if (error) {
       const errorCode = error?.code
+      console.log(error)
       return {
         data: {
           message: 'Ha ocurrido un error al obtener la lista de cuentas',
