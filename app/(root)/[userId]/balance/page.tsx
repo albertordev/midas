@@ -55,11 +55,11 @@ const BalancePage = () => {
       }
       response = await getBalances(balanceFilters)
 
-      if (!response || !response.data) {
+      if (!response) {
         toast({
           variant: 'destructive',
           description:
-            'Ha ocurrido un error al recuperar los datos de los indicadores',
+            'Ha ocurrido un error al recuperar los saldos',
         })
         return
       }

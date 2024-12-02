@@ -404,8 +404,6 @@ export const getMovementsHistory = async (
     limit = 5000,
   } = historyFilters
 
-  console.log(dateFrom, dateTo)
-
   try {
     const query: any = [Query.equal('userId', [userId])]
     account && query.push(Query.equal('account', [account]))

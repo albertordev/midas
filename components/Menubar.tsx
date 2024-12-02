@@ -62,8 +62,6 @@ const Menubar = () => {
     },
   ]
 
-  console.log(avatarBackground)
-
   const LogOut = () => {
     resetUser()
     localStorage.removeItem('midas-user')

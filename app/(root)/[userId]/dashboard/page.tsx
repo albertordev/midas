@@ -1,12 +1,11 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useState } from 'react'
 import {
   BalanceVsBudget,
   BudgetFiltersParams,
   DashboardBalance,
-  DashboardCardData,
-  MovementAccount,
+  DashboardData,
   SortedBalanceParams,
 } from '@/types'
 import DashboardCard from '@/components/DashboardCard'
@@ -16,11 +15,10 @@ import { useUserStore } from '@/store/auth-store'
 import { redirect } from 'next/navigation'
 import { useEffect } from 'react'
 import { getBalances } from '@/lib/actions/balance.actions'
-import { AuthResponse, BalanceFiltersParams } from '@/types'
+import { AuthResponse } from '@/types'
 import { toast } from '@/hooks/use-toast'
 import { getPeriodName } from '@/lib/utils'
 import { getFilteredBudget } from '@/lib/actions/budget.actions'
-import build from 'next/dist/build'
 
 const DashboardPage = () => {
   const state = useUserStore((state: any) => state)
@@ -34,8 +32,8 @@ const DashboardPage = () => {
   const [totalBalance, setTotalBalance] = useState<number>(0)
   const [totalExpenses, setTotalExpenses] = useState<number>(0)
 
-  const [incomeAccounts, setIncomeAccounts] = useState<DashboardCardData[]>([])
-  const [expensesAccounts, setExpensesAccounts] = useState<DashboardCardData[]>(
+  const [incomeAccounts, setIncomeAccounts] = useState<DashboardData[]>([])
+  const [expensesAccounts, setExpensesAccounts] = useState<DashboardData[]>(
     []
   )
   const [balances, setBalances] = useState<DashboardBalance[]>([])
@@ -58,13 +56,11 @@ const DashboardPage = () => {
         }
         incomeResponse = await getBalances(incomeFilters)
 
-        console.log(incomeResponse)
-
         if (!incomeResponse) {
           toast({
             variant: 'destructive',
             description:
-              'Ha ocurrido un error al recuperar los datos de los indicadores 1',
+              'Ha ocurrido un error al recuperar los datos de los indicadores',
           })
           return
         }
@@ -91,7 +87,7 @@ const DashboardPage = () => {
           toast({
             variant: 'destructive',
             description:
-              'Ha ocurrido un error al recuperar los datos de los indicadores 2',
+              'Ha ocurrido un error al recuperar los datos de los indicadores',
           })
           return
         }
@@ -115,7 +111,7 @@ const DashboardPage = () => {
           toast({
             variant: 'destructive',
             description:
-              'Ha ocurrido un error al recuperar los datos de los indicadores 3',
+              'Ha ocurrido un error al recuperar los datos de los indicadores',
           })
           return
         }
@@ -140,8 +136,8 @@ const DashboardPage = () => {
 
         /** Para el gráfico comparativo entre saldo y presupuestos */
         if (
-          incomeResponse?.data &&
-          expensesResponse?.data &&
+          (incomeResponse?.data ||
+          expensesResponse?.data) &&
           budgetResponse?.data
         ) {
           buildBalancesData()
@@ -152,7 +148,7 @@ const DashboardPage = () => {
         toast({
           variant: 'destructive',
           description:
-            'Ha ocurrido un error al recuperar los datos de los indicadores 4',
+            'Ha ocurrido un error al recuperar los datos de los indicadores',
         })
       }
     }
@@ -201,15 +197,15 @@ const DashboardPage = () => {
     setComparative(comparative)
   }, [balances, budgets])
 
-  const getTotalIncome = (incomeData: DashboardCardData[]) => {
+  const getTotalIncome = (incomeData: DashboardData[]) => {
     return incomeData
-      .map((data: DashboardCardData) => data.value)
+      .map((data: DashboardData) => data.value)
       .reduce((total, value) => total + value, 0)
   }
 
-  const getTotalExpenses = (expensesData: DashboardCardData[]) => {
+  const getTotalExpenses = (expensesData: DashboardData[]) => {
     return expensesData
-      .map((data: DashboardCardData) => data.value)
+      .map((data: DashboardData) => data.value)
       .reduce((total, value) => total + value, 0)
   }
 
@@ -265,7 +261,6 @@ const DashboardPage = () => {
         })
       }
     })
-
     setBalances(balanceData)
   }
 
@@ -278,7 +273,7 @@ const DashboardPage = () => {
       )
 
       if (found) {
-        if (budget.type === 'budget') {
+        if (budget.type === 'income') {
           found.amount += budget.amount
         } else {
           found.amount -= budget.amount
@@ -297,12 +292,12 @@ const DashboardPage = () => {
 
   const backgrounds = ['#3B82F6', '#0d53a6']
 
-  const getIncomeAccounts = (incomeData: DashboardCardData[]) => {
+  const getIncomeAccounts = (incomeData: DashboardData[]) => {
     /** Acumulamos los importes de los ingresos por cuenta */
-    const accounts: DashboardCardData[] = []
-    incomeData.forEach((income: DashboardCardData) => {
+    const accounts: DashboardData[] = []
+    incomeData?.forEach((income: DashboardData) => {
       const found = accounts.find(
-        (val: DashboardCardData) => val.name === income.name
+        (val: DashboardData) => val.name === income.name
       )
 
       if (found) {
@@ -311,15 +306,15 @@ const DashboardPage = () => {
         accounts.push(income)
       }
     })
-    setIncomeAccounts(accounts)
+    setIncomeAccounts(accounts.sort((a,b) => (a.value < b.value) ? 1 : ((b.value < a.value) ? -1 : 0)))
   }
 
-  const getExpensesAccounts = (expensesData: DashboardCardData[]) => {
+  const getExpensesAccounts = (expensesData: DashboardData[]) => {
     /** Acumulamos los importes de los gastos por cuenta */
-    const accounts: DashboardCardData[] = []
-    expensesData.forEach((expense: DashboardCardData) => {
+    const accounts: DashboardData[] = []
+    expensesData?.forEach((expense: DashboardData) => {
       const found = accounts.find(
-        (val: DashboardCardData) => val.name === expense.name
+        (val: DashboardData) => val.name === expense.name
       )
       if (found) {
         found.value += expense.value
@@ -327,7 +322,7 @@ const DashboardPage = () => {
         accounts.push(expense)
       }
     })
-    setExpensesAccounts(accounts)
+    setExpensesAccounts(accounts.sort((a,b) => (a.value < b.value) ? 1 : ((b.value < a.value) ? -1 : 0)))
   }
 
   return (
@@ -368,7 +363,7 @@ const DashboardPage = () => {
               backgrounds={backgrounds}
             />
           </div>
-          <div className="grid grid-cols-1 gap-2 p-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1  gap-2 p-4 sm:grid-cols-2">
             <TopMovements
               header="Principales ingresos"
               type="income"
@@ -381,8 +376,8 @@ const DashboardPage = () => {
             />
           </div>
         </div>
-        <div className="m-4 h-[25rem] rounded-md bg-white">
-          <DashboardLineChart userId={user?.$id} data={comparative} />
+        <div className="m-4 h-[35rem] rounded-md bg-white">
+          <DashboardLineChart data={comparative} />
         </div>
       </main>
     </div>

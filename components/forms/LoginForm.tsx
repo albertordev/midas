@@ -86,20 +86,19 @@ const LoginForm = () => {
         values.password
       )
 
-      console.log(response)
-
       if (response?.status !== 200) {
         parseError(response?.status)
         return
       }
 
-      const loggedUser = response?.data
-
-      console.log('loggedUser', loggedUser)
+      const loggedUser = {
+        ...response?.data,
+        $id: response?.data.id
+      }
 
       if (loggedUser && response?.status === 200 && loggedUser?.$id) {
         router.push(`/${loggedUser?.$id}/dashboard`)
-        saveUser({ user: loggedUser })
+        saveUser && saveUser({ user: loggedUser })
       }
     } catch (error: AuthResponse | any) {
       console.log(error)

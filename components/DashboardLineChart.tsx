@@ -1,7 +1,6 @@
 'use client'
 
-import { BalanceVsBudget, DashboardBalance } from '@/types'
-import React, { useEffect, useState } from 'react'
+import { BalanceVsBudget } from '@/types'
 import {
   LineChart,
   Line,
@@ -13,69 +12,10 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 
-// const data = [
-//   {
-//     name: 'Ene',
-//     balance: 1000,
-//     budget: 900,
-//   },
-//   {
-//     name: 'Feb',
-//     balance: 800,
-//     budget: 1000,
-//   },
-//   {
-//     name: 'Mar',
-//     balance: 850,
-//     budget: 950,
-//   },
-//   {
-//     name: 'Abr',
-//     balance: 975,
-//     budget: 900,
-//   },
-//   {
-//     name: 'Jun',
-//     balance: 980,
-//     budget: 955,
-//   },
-//   {
-//     name: 'Jul',
-//     balance: 1100,
-//     budget: 1000,
-//   },
-//   {
-//     name: 'Ago',
-//     balance: 960,
-//     budget: 880,
-//   },
-//   {
-//     name: 'Sep',
-//     balance: 925,
-//     budget: 950,
-//   },
-//   {
-//     name: 'Oct',
-//     balance: 1050,
-//     budget: 890,
-//   },
-//   {
-//     name: 'Nov',
-//     balance: 885,
-//     budget: 925,
-//   },
-//   {
-//     name: 'Dic',
-//     balance: 1200,
-//     budget: 1150,
-//   },
-// ]
 
 export const DashboardLineChart = ({
-  userId,
   data,
 }: {
-  userId: string
   data: BalanceVsBudget[]
 }) => {
   return (

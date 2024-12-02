@@ -78,8 +78,6 @@ const AccountsPage = () => {
   const getAccountsList = async (userId: string) => {
     response = await getAccounts(userId)
 
-    console.log(response)
-
     if (!response) {
       toast({
         variant: 'destructive',
@@ -95,8 +93,6 @@ const AccountsPage = () => {
       })
       return
     }
-
-    console.log(response?.data)
 
     setData(parseOutputData(response?.data))
     if (rowUpdated) {

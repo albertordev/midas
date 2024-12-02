@@ -1,3 +1,5 @@
+'use client'
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,23 +10,29 @@ import { Button } from '@/components/ui/button'
 import { MoreHorizontal, Edit, Trash } from 'lucide-react'
 import { RowActions as Actions } from '@/constants'
 import ConfirmationMessage from './ConfirmationMessage'
-import { useState } from 'react'
-import { AccountModel, MovementModel } from '@/types/appwrite.types'
+import { useEffect, useState } from 'react'
+import { AccountModel, BudgetModel, MovementModel } from '@/types/appwrite.types'
 import { deleteAccount } from '@/lib/actions/accounts.actions'
 import { toast } from '@/hooks/use-toast'
 import { CellActionProps } from '@/types'
 import { useAccountActionStore } from '@/store/account-action-store'
 import { useMovementActionStore } from '@/store/movement-action-store'
-import AccountModal from './AccountModal'
-import MovementModal from './MovementModal'
+import AccountModal from '@/components/AccountModal'
+import MovementModal from '@/components/MovementModal'
+import BudgetModal from '@/components/BudgetModal'
 import { useUserStore } from '@/store/auth-store'
 import { deleteMovement } from '@/lib/actions/movements.actions'
+import { useBudgetActionStore } from '@/store/budget-action-store'
+import { deleteBudget } from '@/lib/actions/budget.actions'
+import { getPeriodName } from '@/lib/utils'
 
 const CellAction = ({ origin, row, labels, actions }: CellActionProps) => {
   const [openAccountDialog, setOpenAccountDialog] = useState(false)
   const [openMovementDialog, setOpenMovementDialog] = useState(false)
+  const [openBudgetDialog, setOpenBudgetDialog] = useState(false)
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false)
   const [isMovementsModalOpen, setIsMovementsModalOpen] = useState(false)
+  const [isBudgetModalOpen, setIsBudgetModalOpen] = useState(false)
   const setAccountDeleted = useAccountActionStore(
     (state: any) => state.setRowDeleted
   )
@@ -35,7 +43,13 @@ const CellAction = ({ origin, row, labels, actions }: CellActionProps) => {
     (state: any) => state.setRowDeleted
   )
   const updateCurrentMovement = useMovementActionStore(
+    (state: any) => state.updateCurrentMovement
+  )
+  const setBudgetDeleted = useBudgetActionStore(
     (state: any) => state.setRowDeleted
+  )
+  const updateCurrentBudget = useBudgetActionStore(
+    (state: any) => state.updateCurrentBudget
   )
   const state = useUserStore((state: any) => state)
   const { user } = state
@@ -72,6 +86,22 @@ const CellAction = ({ origin, row, labels, actions }: CellActionProps) => {
     setMovementDeleted(true)
   }
 
+  const deleteSelectedBudget = async (budgetId: string) => {
+    setIsBudgetModalOpen(false)
+    const response = await deleteBudget(budgetId)
+
+    if (response?.status !== 200) {
+      toast({
+        variant: 'destructive',
+        description: response?.data.message,
+      })
+      return
+    }
+
+    /** Notificamos el borrado para actualizar la lista de movimientos */
+    setBudgetDeleted(true)
+  }
+
   const updateSelected = (entity: any) => {
     switch (origin) {
       case 'accounts':
@@ -89,9 +119,19 @@ const CellAction = ({ origin, row, labels, actions }: CellActionProps) => {
           type: entity.type === 'Ingresos' ? 'income' : 'expenses',
         }
 
-        updateCurrentMovement(movementToUpdate)
+        updateCurrentMovement(movementToUpdate)        
         setOpenMovementDialog(true)
         break
+      case 'budget':
+        const budgetToUpdate: BudgetModel = {
+          ...entity,
+          date: new Date(entity.date),
+          type: entity.type === 'Ingresos' ? 'income' : 'expenses',
+        }
+
+        updateCurrentBudget(budgetToUpdate)        
+        setOpenBudgetDialog(true)
+        break  
       default:
         break
     }
@@ -104,6 +144,9 @@ const CellAction = ({ origin, row, labels, actions }: CellActionProps) => {
         break
       case 'movements':
         setIsMovementsModalOpen(true)
+        break
+      case 'budget':
+        setIsBudgetModalOpen(true)
         break
       default:
         break
@@ -155,6 +198,14 @@ const CellAction = ({ origin, row, labels, actions }: CellActionProps) => {
         onConfirm={() => deleteSelectedMovement(row.original.$id)}
         loading={false}
       />
+      <ConfirmationMessage
+        title={`¿Está seguro de eliminar el presupuesto para la cuenta ${row.original.account}, mes ${getPeriodName(row.original.period)} y año ${row.original.year}?`}
+        description="Esto eliminará permanentemente el presupuesto de la base de datos."
+        isOpen={isBudgetModalOpen}
+        onClose={() => setIsBudgetModalOpen(false)}
+        onConfirm={() => deleteSelectedBudget(row.original.$id)}
+        loading={false}
+      />
       {/* Diálogos para crear y modificar registros */}
       <div className="w-min-[600px]">
         <AccountModal
@@ -170,6 +221,14 @@ const CellAction = ({ origin, row, labels, actions }: CellActionProps) => {
           userId={user.$id}
           open={openMovementDialog}
           setOpen={setOpenMovementDialog}
+        />
+      </div>
+      <div className="w-min-[600px]">
+        <BudgetModal
+          type="modify"
+          userId={user.$id}
+          open={openBudgetDialog}
+          setOpen={setOpenBudgetDialog}
         />
       </div>
     </div>

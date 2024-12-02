@@ -104,7 +104,7 @@ const RenderInput = ({
               showTimeSelect={props.showTimeSelect ?? false}
               selected={field.value}
               locale="es"
-              onChange={(date: Date | null) => field.onChange(date)}
+              onChange={(date: Date | null) => date && field.onChange(date)}
               dateFormat={props.dateFormat ?? 'dd/MM/yyyy'}
             />
           </FormControl>
@@ -137,10 +137,6 @@ const RenderInput = ({
 
 const CustomFormField = (props: CustomProps) => {
   const { control, name, label, onSelectValueChanged } = props
-
-  // const onSelectValueChanged = (value: any) => {
-  //   console.log(value)
-  // }
 
   return (
     <FormField

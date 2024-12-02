@@ -6,6 +6,7 @@ import {
   AccountColumns,
   MovementColumns,
   BalanceColumns,
+  BudgetColumns,
   RowActions,
 } from '@/constants'
 import Image from 'next/image'
@@ -121,7 +122,7 @@ export const accountColumns: ({
     {
       id: 'actions',
       header: () => (
-        <div className="text-center">{labels[RowActions.HEADER]}</div>
+        <div className="text-center">{actions[RowActions.HEADER]}</div>
       ),
       cell: ({ row }) => (
         <CellAction
@@ -217,8 +218,17 @@ export const movementColumns: ({
     },
     {
       accessorKey: 'parsedDate',
-      header: () => (
-        <div className="text-center">{labels[MovementColumns.DATE]}</div>
+      header: ({ column }) => (
+        <div className="text-center">
+          <Button
+            variant="ghost"
+            onClick={() =>
+              column.toggleSorting(column.getIsSorted() === 'asc')
+            }>
+            {labels[MovementColumns.DATE]}
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
       ),
       cell: ({ row }) => {
         return (
@@ -255,7 +265,7 @@ export const movementColumns: ({
     {
       id: 'actions',
       header: () => (
-        <div className="text-center">{labels[RowActions.HEADER]}</div>
+        <div className="text-center">{actions[RowActions.HEADER]}</div>
       ),
       cell: ({ row }) => (
         <CellAction
@@ -343,8 +353,17 @@ export const historyColumns: ({
     },
     {
       accessorKey: 'parsedDate',
-      header: () => (
-        <div className="text-center">{labels[MovementColumns.DATE]}</div>
+      header: ({ column }) => (
+        <div className="text-center">
+          <Button
+            variant="ghost"
+            onClick={() =>
+              column.toggleSorting(column.getIsSorted() === 'asc')
+            }>
+            {labels[MovementColumns.DATE]}
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
       ),
       cell: ({ row }) => {
         return (
@@ -455,8 +474,17 @@ export const balanceColumns: ({
     },
     {
       accessorKey: 'year',
-      header: () => (
-        <div className="text-center">{labels[BalanceColumns.YEAR]}</div>
+      header: ({ column }) => (
+        <div className="text-center">
+          <Button
+            variant="ghost"
+            onClick={() =>
+              column.toggleSorting(column.getIsSorted() === 'asc')
+            }>
+            {labels[BalanceColumns.YEAR]}
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
       ),
       cell: ({ row }) => {
         return (
@@ -466,8 +494,17 @@ export const balanceColumns: ({
     },
     {
       accessorKey: 'periodName',
-      header: () => (
-        <div className="text-center">{labels[BalanceColumns.PERIOD]}</div>
+      header: ({ column }) => (
+        <div className="text-center">
+          <Button
+            variant="ghost"
+            onClick={() =>
+              column.toggleSorting(column.getIsSorted() === 'asc')
+            }>
+            {labels[BalanceColumns.PERIOD]}
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
       ),
       cell: ({ row }) => {
         return (
@@ -506,9 +543,17 @@ export const balanceColumns: ({
 
 export const budgetColumns: ({
   labels,
+  actions,
 }: {
   labels: string[]
-}) => ColumnDef<BudgetModel>[] = ({ labels }: { labels: string[] }) => {
+  actions: string[]
+}) => ColumnDef<BudgetModel>[] = ({
+  labels,
+  actions = [],
+}: {
+  labels: string[]
+  actions: string[]
+}) => {
   return [
     {
       accessorKey: 'account',
@@ -519,7 +564,7 @@ export const budgetColumns: ({
             onClick={() =>
               column.toggleSorting(column.getIsSorted() === 'asc')
             }>
-            {labels[BalanceColumns.ACCOUNT]}
+            {labels[BudgetColumns.ACCOUNT]}
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         )
@@ -540,7 +585,7 @@ export const budgetColumns: ({
               onClick={() =>
                 column.toggleSorting(column.getIsSorted() === 'asc')
               }>
-              {labels[BalanceColumns.NAME]}
+              {labels[BudgetColumns.NAME]}
               <ArrowUpDown className="ml-2 h-4 w-4" />
             </Button>
           </p>
@@ -564,7 +609,7 @@ export const budgetColumns: ({
               onClick={() =>
                 column.toggleSorting(column.getIsSorted() === 'asc')
               }>
-              {labels[BalanceColumns.TYPE]}
+              {labels[BudgetColumns.TYPE]}
               <ArrowUpDown className="ml-2 h-4 w-4" />
             </Button>
           </p>
@@ -578,8 +623,17 @@ export const budgetColumns: ({
     },
     {
       accessorKey: 'year',
-      header: () => (
-        <div className="text-center">{labels[BalanceColumns.YEAR]}</div>
+      header: ({column}) => (
+        <div className="text-center">
+          <Button
+            variant="ghost"
+            onClick={() =>
+              column.toggleSorting(column.getIsSorted() === 'asc')
+            }>
+            {labels[BudgetColumns.YEAR]}
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+          </div>
       ),
       cell: ({ row }) => {
         return (
@@ -589,8 +643,17 @@ export const budgetColumns: ({
     },
     {
       accessorKey: 'periodName',
-      header: () => (
-        <div className="text-center">{labels[BalanceColumns.PERIOD]}</div>
+      header: ({column}) => (
+        <div className="text-center">
+          <Button
+            variant="ghost"
+            onClick={() =>
+              column.toggleSorting(column.getIsSorted() === 'asc')
+            }>
+            {labels[BudgetColumns.PERIOD]}
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+          </div>
       ),
       cell: ({ row }) => {
         return (
@@ -610,7 +673,7 @@ export const budgetColumns: ({
               onClick={() =>
                 column.toggleSorting(column.getIsSorted() === 'asc')
               }>
-              {labels[BalanceColumns.AMOUNT]}
+              {labels[BudgetColumns.AMOUNT]}
               <ArrowUpDown className="ml-2 h-4 w-4" />
             </Button>
           </div>
@@ -623,6 +686,20 @@ export const budgetColumns: ({
           </div>
         )
       },
+    },
+    {
+      id: 'actions',
+      header: () => (
+        <div className="text-center">{actions[RowActions.HEADER]}</div>
+      ),
+      cell: ({ row }) => (
+        <CellAction
+          origin="budget"
+          row={row}
+          labels={labels}
+          actions={actions}
+        />
+      ),
     },
   ]
 }

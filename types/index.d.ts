@@ -1,9 +1,9 @@
-declare type DashboardCardData = {
+declare type DashboardData = {
   name: string
   value: number
 }
 
-declare type DashboardCardProps = {
+declare type DashboardProps = {
   title: string
   amount: number
   icon: string
@@ -34,7 +34,14 @@ export type EntityFormProps = {
   type: 'create' | 'modify'
   userId: string
   open?: boolean
-  setOpen?: Dispatch<SetStateAction<boolean>>
+  setOpen?: Dispatch<SetStateAction<boolean>>  
+}
+
+export type EntityModalProps = {
+  type: 'create' | 'modify'
+  userId: string
+  open?: boolean
+  setOpen?: Dispatch<SetStateAction<void>>
 }
 
 export type FiltersProps = {

@@ -7,7 +7,7 @@ export const useUserStore = create(
     (set, get) => ({
       user: {},
       saveUser: (newUser: User) => set({ ...newUser }),
-      resetUser: () => set({}, true),
+      resetUser: () => set({user: {}}),
     }),
     { name: 'midas-user' }
   )

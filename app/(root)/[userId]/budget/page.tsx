@@ -34,7 +34,7 @@ actions[RowActions.HEADER] = 'Acciones'
 actions[RowActions.DELETE] = 'Borrar'
 actions[RowActions.EDIT] = 'Modificar'
 
-const columns = budgetColumns({ labels })
+const columns = budgetColumns({ labels, actions })
 
 /** Utilidades usadas por el componente */
 const parseOutputData = (data: BudgetModel[]): BudgetModel[] => {
@@ -75,6 +75,12 @@ const BudgetPage = () => {
       getBudgetsList(user.$id)
     }
   }, [user.$id, rowUpdated, rowDeleted])
+
+  useEffect(() => {
+    if (rowUpdated || rowDeleted) {
+      getBudgetsList(user.$id)
+    }
+  }, [openBudgetDialog])
 
   const getBudgetsList = async (userId: string) => {
     response = await getBudgets(userId)

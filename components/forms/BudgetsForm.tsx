@@ -15,7 +15,12 @@ import { getAccounts } from '@/lib/actions/accounts.actions'
 import { toast } from '@/hooks/use-toast'
 import { AccountModel } from '@/types/appwrite.types'
 import { useBudgetActionStore } from '@/store/budget-action-store'
-import { buildPeriodsList, buildYearsList, getPeriodValue } from '@/lib/utils'
+import {
+  buildPeriodsList,
+  buildYearsList,
+  getPeriodName,
+  getPeriodValue,
+} from '@/lib/utils'
 
 const formSchema = z.object({
   account: z.string().min(1, 'Seleccione una cuenta'),
@@ -54,13 +59,15 @@ const BudgetsForm = ({ type, userId, setOpen }: EntityFormProps) => {
   const [accounts, setAccounts] = useState<AccountModel[]>([])
   const [years, setYears] = useState<number[]>(buildYearsList())
   const [periods, setPeriods] = useState<any[]>(buildPeriodsList('es'))
+  const [isDatabaseChanged, setIsDatabaseChanged] = useState(false)
 
   const defaultValues = {
     account: type === 'modify' ? currentBudget?.account : null,
-    period: type === 'modify' ? currentBudget?.period : 0,
-    year: type === 'modify' ? currentBudget?.year : 0,
+    period: type === 'modify' ? getPeriodName(currentBudget?.period) : '',
+    year: type === 'modify' ? currentBudget?.year.toString() : '',
     amount: type === 'modify' ? currentBudget?.amount : 0,
   }
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues,
@@ -104,6 +111,15 @@ const BudgetsForm = ({ type, userId, setOpen }: EntityFormProps) => {
     if (selectedAccount) {
       setCurrentAccount(selectedAccount)
     }
+  }
+
+  const openModal = (open: boolean) => {
+    if (!open && isDatabaseChanged) {
+      /** Notificamos el cambio para actualizar la lista de presupuestos */
+      setRowUpdated(true)
+    }
+
+    setOpen(open)
   }
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -150,11 +166,20 @@ const BudgetsForm = ({ type, userId, setOpen }: EntityFormProps) => {
           return
         }
 
-        !isSaveAndNew && setOpen && setOpen(false)
-        isSaveAndNew && clear()
-
-        /** Notificamos el cambio para actualizar la lista de presupuestos */
-        setRowUpdated(true)
+        if (isSaveAndNew) {
+          clear()
+          /** Notificamos que se ha producido un cambio en la bbdd y por lo
+           *  tanto tendremos que recargar la lista cuando salgamos de la
+           *  pantalla
+           */
+          setIsDatabaseChanged(true)
+        }else{
+          /** Notificamos el cambio para actualizar la lista de presupuestos 
+           *  y salimos
+          */
+          setRowUpdated(true)
+          setOpen && setOpen(false)
+        }        
       } catch (error) {
         toast({
           variant: 'destructive',
@@ -175,13 +200,38 @@ const BudgetsForm = ({ type, userId, setOpen }: EntityFormProps) => {
           amount: values.amount,
         }
 
-        await modifyBudget(budget)
+        const response: AuthResponse | undefined = await modifyBudget(budget)
 
-        !isSaveAndNew && setOpen && setOpen(false)
-        isSaveAndNew && clear()
+        if (!response || !response.status) {
+          toast({
+            variant: 'destructive',
+            description: 'Ha ocurrido un error al modificar la cuenta',
+          })
+          return
+        }
 
-        /** Notificamos el cambio para actualizar la lista de presupuestos */
-        setRowUpdated(true)
+        if (response?.status !== 200) {
+          toast({
+            variant: 'destructive',
+            description: response?.data.message,
+          })
+          return
+        }
+
+        if (isSaveAndNew) {
+          clear()
+          /** Notificamos que se ha producido un cambio en la bbdd y por lo
+           *  tanto tendremos que recargar la lista cuando salgamos de la
+           *  pantalla
+           */
+          setIsDatabaseChanged(true)
+        }else{
+          /** Notificamos el cambio para actualizar la lista de presupuestos 
+           *  y salimos
+          */
+          setRowUpdated(true)
+          setOpen && setOpen(false)
+        }        
       } catch (error) {
         toast({
           variant: 'destructive',
@@ -193,7 +243,12 @@ const BudgetsForm = ({ type, userId, setOpen }: EntityFormProps) => {
   }
 
   const clear = () => {
-    reset()
+    reset({
+      account: '',
+      year: 0,
+      period: '',
+      amount: 0,
+    })    
   }
 
   return (
@@ -280,7 +335,7 @@ const BudgetsForm = ({ type, userId, setOpen }: EntityFormProps) => {
               className="mt-4 max-w-[200px]"
               variant="ghost"
               type="button"
-              onClick={() => setOpen(false)}>
+              onClick={() => openModal(false)}>
               Cancelar
             </Button>
             <Button

@@ -11,17 +11,19 @@ import {
 } from '@/components/ui/dialog'
 import { EntityFormProps } from '@/types'
 import BudgetsForm from '@/components/forms/BudgetsForm'
+import { useBudgetActionStore } from '@/store/budget-action-store'
 
-const MovementModal = ({ userId, type, open, setOpen }: EntityFormProps) => {
+const BudgetModal = ({ userId, type, open, setOpen }: EntityFormProps) => {
   const [modalOpen, setModalOpen] = useState(open)
+  const rowUpdated = useBudgetActionStore((state: any) => state.rowUpdated)
 
   useEffect(() => {
     setModalOpen(open)
   }, [open])
 
   useEffect(() => {
-    setOpen && setOpen(modalOpen)
-  }, [modalOpen])
+    setOpen && setOpen(modalOpen!)
+  }, [modalOpen, rowUpdated])
 
   return (
     <Dialog open={modalOpen} onOpenChange={setModalOpen}>
@@ -39,10 +41,10 @@ const MovementModal = ({ userId, type, open, setOpen }: EntityFormProps) => {
             Introduzca los presupuestos por período y año
           </DialogDescription>
         </DialogHeader>
-        <BudgetsForm userId={userId} setOpen={setOpen} type={type} />
+        <BudgetsForm userId={userId} setOpen={setModalOpen} type={type} />
       </DialogContent>
     </Dialog>
   )
 }
 
-export default MovementModal
+export default BudgetModal

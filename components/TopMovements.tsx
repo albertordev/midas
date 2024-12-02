@@ -11,7 +11,7 @@ const TopMovements = ({ type, header, accounts }: TopMovementsProps) => {
   const locale = pathname.split('/')[1]
 
   return (
-    <div className="flex w-full flex-col items-center justify-start bg-white">
+    <div className="flex w-full flex-col rounded-md items-center justify-start bg-white">
       <header className="flex items-center justify-center gap-2 p-2">
         <div
           className={cn(

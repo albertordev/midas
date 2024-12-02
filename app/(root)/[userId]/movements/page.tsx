@@ -5,14 +5,13 @@ import { toast } from '@/hooks/use-toast'
 import { getAccounts } from '@/lib/actions/accounts.actions'
 import MovementModal from '@/components/MovementModal'
 import { useUserStore } from '@/store/auth-store'
-import { Account, AuthResponse, HistoryFiltersParams, Movement } from '@/types'
+import { Account, AuthResponse, HistoryFiltersParams } from '@/types'
 import { useEffect, useState } from 'react'
 import { CirclePlus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import DataTable from '@/components/DataTable'
 import { MovementColumns, RowActions } from '@/constants'
 import { movementColumns } from '@/lib/columns'
-import { getMovements } from '@/lib/actions/movements.actions'
 import { MovementModel } from '@/types/appwrite.types'
 import { useMovementActionStore } from '@/store/movement-action-store'
 import { redirect } from 'next/navigation'
@@ -84,8 +83,6 @@ const MovementsPage = () => {
     const dateFrom = new Date(today.getFullYear(), 1, 1)
     const dateTo = today
 
-    console.log(dateFrom, dateTo)
-
     const historyFilters: HistoryFiltersParams = {
       userId,
       dateFrom,
@@ -110,6 +107,7 @@ const MovementsPage = () => {
       })
       return
     }
+
     setData(parseOutputData(response?.data))
     if (rowUpdated) {
       setRowUpdated(false)

@@ -52,6 +52,7 @@ const MovementsForm = ({ type, userId, setOpen }: EntityFormProps) => {
   const [isLoadingAccounts, setIsLoadingAccounts] = useState(false)
   const [isSaveAndNew, setIsSaveAndNew] = useState<boolean | null>(null)
   const [accounts, setAccounts] = useState<AccountModel[]>([])
+  const [isDatabaseChanged, setIsDatabaseChanged] = useState(false)
 
   const defaultValues = {
     account: type === 'modify' ? currentMovement?.account : null,
@@ -63,10 +64,9 @@ const MovementsForm = ({ type, userId, setOpen }: EntityFormProps) => {
     resolver: zodResolver(formSchema),
     defaultValues,
   })
-  const { reset } = form
+  const { reset} = form
 
   useEffect(() => {
-    console.log(currentMovement?.date)
     getAccountsList(userId)
   }, [])
 
@@ -103,6 +103,15 @@ const MovementsForm = ({ type, userId, setOpen }: EntityFormProps) => {
     if (selectedAccount) {
       setCurrentAccount(selectedAccount)
     }
+  }
+
+  const openModal = (open: boolean) => {
+    if (!open && isDatabaseChanged) {
+      /** Notificamos el cambio para actualizar la lista de presupuestos */
+      setRowUpdated(true)
+    }
+
+    setOpen(open)
   }
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -148,11 +157,20 @@ const MovementsForm = ({ type, userId, setOpen }: EntityFormProps) => {
           return
         }
 
-        !isSaveAndNew && setOpen && setOpen(false)
-        isSaveAndNew && clear()
-
-        /** Notificamos el cambio para actualizar la lista de movimientos */
-        setRowUpdated(true)
+        if (isSaveAndNew) {
+          clear()
+          /** Notificamos que se ha producido un cambio en la bbdd y por lo
+           *  tanto tendremos que recargar la lista cuando salgamos de la
+           *  pantalla
+           */
+          setIsDatabaseChanged(true)
+        }else{
+          /** Notificamos el cambio para actualizar la lista de presupuestos 
+           *  y salimos
+          */
+          setRowUpdated(true)
+          setOpen && setOpen(false)
+        }        
       } catch (error) {
         toast({
           variant: 'destructive',
@@ -161,7 +179,6 @@ const MovementsForm = ({ type, userId, setOpen }: EntityFormProps) => {
         })
       }
     } else {
-      console.log(values.date)
       try {
         const movement: Movement = {
           id: currentMovement.$id,
@@ -174,13 +191,38 @@ const MovementsForm = ({ type, userId, setOpen }: EntityFormProps) => {
           amount: values.amount,
         }
 
-        await modifyMovement(movement)
+        const response: AuthResponse | undefined = await modifyMovement(movement)
 
-        !isSaveAndNew && setOpen && setOpen(false)
-        isSaveAndNew && clear()
+        if (!response || !response?.data) {
+          toast({
+            variant: 'destructive',
+            description: 'Ha ocurrido un error al crear el movimiento',
+          })
+          return
+        }
 
-        /** Notificamos el cambio para actualizar la lista de movimientos */
-        setRowUpdated(true)
+        if (response?.status !== 200) {
+          toast({
+            variant: 'destructive',
+            description: response?.data.message,
+          })
+          return
+        }
+
+        if (isSaveAndNew) {
+          clear()
+          /** Notificamos que se ha producido un cambio en la bbdd y por lo
+           *  tanto tendremos que recargar la lista cuando salgamos de la
+           *  pantalla
+           */
+          setIsDatabaseChanged(true)
+        }else{
+          /** Notificamos el cambio para actualizar la lista de presupuestos 
+           *  y salimos
+          */
+          setRowUpdated(true)
+          setOpen && setOpen(false)
+        }        
       } catch (error) {
         toast({
           variant: 'destructive',
@@ -192,7 +234,12 @@ const MovementsForm = ({ type, userId, setOpen }: EntityFormProps) => {
   }
 
   const clear = () => {
-    reset()
+    reset({
+      account: '',
+      description: '',
+      date: null!,
+      amount: 0,
+    })
   }
 
   return (
@@ -269,7 +316,7 @@ const MovementsForm = ({ type, userId, setOpen }: EntityFormProps) => {
               className="mt-4 max-w-[200px]"
               variant="ghost"
               type="button"
-              onClick={() => setOpen(false)}>
+              onClick={() => openModal(false)}>
               Cancelar
             </Button>
             <Button

@@ -39,6 +39,7 @@ const AccountsForm = ({ type, userId, setOpen }: EntityFormProps) => {
     (state: any) => state.currentAccount
   )
   const [isSaveAndNew, setIsSaveAndNew] = useState<boolean | null>(null)
+  const [isDatabaseChanged, setIsDatabaseChanged] = useState(false)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -52,6 +53,15 @@ const AccountsForm = ({ type, userId, setOpen }: EntityFormProps) => {
   })
 
   const { reset } = form
+
+  const openModal = (open: boolean) => {
+    if (!open && isDatabaseChanged) {
+      /** Notificamos el cambio para actualizar la lista de presupuestos */
+      setRowUpdated(true)
+    }
+
+    setOpen(open)
+  }
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (isSaveAndNew === null) {
@@ -87,11 +97,20 @@ const AccountsForm = ({ type, userId, setOpen }: EntityFormProps) => {
           return
         }
 
-        !isSaveAndNew && setOpen && setOpen(false)
-        isSaveAndNew && clear()
-
-        /** Notificamos el cambio para actualizar la lista de cuentas */
-        setRowUpdated(true)
+        if (isSaveAndNew) {
+          clear()
+          /** Notificamos que se ha producido un cambio en la bbdd y por lo
+           *  tanto tendremos que recargar la lista cuando salgamos de la
+           *  pantalla
+           */
+          setIsDatabaseChanged(true)
+        }else{
+          /** Notificamos el cambio para actualizar la lista de presupuestos 
+           *  y salimos
+          */
+          setRowUpdated(true)
+          setOpen && setOpen(false)
+        }        
       } catch (error) {
         toast({
           variant: 'destructive',
@@ -119,11 +138,20 @@ const AccountsForm = ({ type, userId, setOpen }: EntityFormProps) => {
           return
         }
 
-        !isSaveAndNew && setOpen && setOpen(false)
-        isSaveAndNew && clear()
-
-        /** Notificamos el cambio para actualizar la lista de cuentas */
-        setRowUpdated(true)
+        if (isSaveAndNew) {
+          clear()
+          /** Notificamos que se ha producido un cambio en la bbdd y por lo
+           *  tanto tendremos que recargar la lista cuando salgamos de la
+           *  pantalla
+           */
+          setIsDatabaseChanged(true)
+        }else{
+          /** Notificamos el cambio para actualizar la lista de presupuestos 
+           *  y salimos
+          */
+          setRowUpdated(true)
+          setOpen && setOpen(false)
+        }        
       } catch (error) {
         toast({
           variant: 'destructive',
@@ -134,7 +162,6 @@ const AccountsForm = ({ type, userId, setOpen }: EntityFormProps) => {
   }
 
   const clear = () => {
-    // if(currentAccount){
     form.reset({
       account: '',
       description: '',
@@ -142,8 +169,6 @@ const AccountsForm = ({ type, userId, setOpen }: EntityFormProps) => {
       type: '',
       comments: '',
     })
-    // }
-    reset()
   }
 
   return (
@@ -197,7 +222,7 @@ const AccountsForm = ({ type, userId, setOpen }: EntityFormProps) => {
               className="sm:text-md mt-4 max-w-[200px] text-xs"
               variant="ghost"
               type="button"
-              onClick={() => setOpen(false)}>
+              onClick={() => openModal(false)}>
               Cancelar
             </Button>
             <Button
